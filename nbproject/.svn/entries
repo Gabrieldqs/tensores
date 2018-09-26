@@ -1,0 +1,91 @@
+10
+
+dir
+0
+https://www.gcg.ufjf.br/svn/gcg/advising/gildo/disertacao/TensorVisuAdvec/nbproject
+https://www.gcg.ufjf.br/svn/gcg
+add
+
+
+
+
+
+has-props
+has-prop-mods
+
+
+
+
+
+
+
+
+
+
+
+
+c7569681-a49e-4eb8-964d-27ce95ff116d
+
+Makefile-Release.mk
+file
+
+
+
+add
+
+project.properties
+file
+
+
+
+add
+
+Makefile-impl.mk
+file
+
+
+
+add
+
+Package-Release.bash
+file
+
+
+
+add
+
+project.xml
+file
+
+
+
+add
+
+Makefile-Debug.mk
+file
+
+
+
+add
+
+Makefile-variables.mk
+file
+
+
+
+add
+
+configurations.xml
+file
+
+
+
+add
+
+Package-Debug.bash
+file
+
+
+
+add
+

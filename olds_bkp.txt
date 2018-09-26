@@ -1,0 +1,2656 @@
+
+    //      int addr;
+    //    for (unsigned int z = 0; z < fdepth; z++)
+    //        for (unsigned int y = 0; y < fheight; y++)
+    //            for (unsigned int x = 0; x < fwidth; x++) {
+    //                addr = ADDRESSVOLUME((x), (y), (z));
+    //                 if ( (glyphs_original[addr]->cl > THRESHOLD) || (glyphs_original[addr]->cp > THRESHOLD))
+    //                createTensorline(velField, glyphs_original, &noriginals, fwidth, fheight, fdepth, x, y, z, bigger);
+    //            }
+
+
+    //  formatting the input volume into a tensor grid
+    //    for (unsigned int z = 0; z < fdepth; z++)
+    //        for (unsigned int y = 0; y < fheight; y++)
+    //            for (unsigned int x = 0; x < fwidth; x++) {
+    //                gcgCOPYMATRIX3(grid_entrada->data[z * fwidth * fheight + y * fwidth + x], field[z * fwidth * fheight + y * fwidth + x]);
+    //            }
+
+
+    //  gcgGCGTENSORGENERATE* generate = new gcgGCGTENSORGENERATE(fwidth,fheight, fdepth);
+    //
+    //   for(int i = 0; i < tamanho; ++i){
+    //         gcgCOPYMATRIX3(field[i],generate->grid->data[i]);
+    //   }
+    //
+
+    //   for (unsigned int z = 0; z < fdepth; z++)
+    //     for (unsigned int y = 0; y < fheight; y++)
+    //        for (unsigned int x = 0; x < fwidth; x++){
+    //
+    //            gcgCOPYMATRIX3( grid_entrada->data[z* fwidth * fheight + y*fwidth+ x],generate->grid->data[z* fwidth * fheight + y*fwidth+ x] );
+    //
+    //
+    //    }
+
+
+    //creating glyphs from the tensor field
+    //    createTensorGlyphs(glyphs_original, &noriginals, field, confidence, fwidth, fheight, fdepth, &bigger);
+
+    //    geometry = new gcgOptimizedGridSPH();
+    //
+    //    //inicio da etapa de codificação
+    //    glyphs_original = (gcgTENSORGLYPH**) malloc(sizeof (gcgTENSORGLYPH*) * (int) (fwidth) * (fheight) * (fdepth));
+    //    velField = (VECTOR3*) malloc(sizeof (VECTOR3) * (int) (fwidth) * (fheight) * (fdepth));
+    //    tensor_ord = (gcgTENSORGLYPH**) malloc(sizeof (gcgTENSORGLYPH*) * (totalSize + 1));
+    //
+    //    VECTOR3 pos, posP, posN;
+    //
+    //    geometry->init((int) fwidth, (int) fheight, (int) fdepth, nParticles, smoothWidth, influenceRadius, 1);
+
+
+
+    //Rotinas para adicionar particulas
+
+    //   for(unsigned int i = 1; i < fwidth; i++)
+    //    for(unsigned int j = 1; j < fheight; j++)
+    //      for(unsigned int k = 1; k < fdepth - 1; k++){
+    //        if (i*j*k <= nParticles){
+    //         pos[0] = (float) i+10.5f;
+    //         pos[1] = (float) j+5.5f;
+    //         pos[2] = (float) k+0.0f;
+    //        geometry->addParticle(new gcgParticleSPH(mass, 0.5f, initialDensity, pos));
+    //        }
+    //      }
+
+
+
+
+
+    //    MATRIX3 *field;
+    //    float* confidence; //it is 1.0 in regions where the tensors are meaningful and useful, and 0.0 where the tensors are noise (such as air)
+    //    FILE* file;
+    //
+    //    //Creating the tensor grid
+    //    gcgTENSORGRID *grid_entrada = new gcgTENSORGRID();
+    //    grid_entrada->createGrid(fwidth, fheight, fdepth);
+    //
+    //    //Opening the input dt-mri file and creating space for the tensor field
+    //    field = (MATRIX3*) malloc(sizeof (MATRIX3) * fwidth * fheight * fdepth);
+    //    confidence = (float*) malloc(sizeof (float) * fwidth * fheight * fdepth);
+    //    if (!(file = fopen(INPUT, "rb+"))) puts("Erro ao importar campo tensorial!");
+    //    //  if(!(file = fopen("gk2-rcc-mask.raw", "rb+"))) puts("Erro ao importar campo tensorial!");
+    //
+    //    int tamanho = fwidth * fheight * fdepth;
+    //
+    //    fscanf(file, "%d %d %d\n\n", &fwidth, &fheight, &fdepth);
+    //    //stores the tensor field
+    //    for (int i = 0; i < tamanho; ++i) {
+    //        fscanf(file, "%f %f %f\n%f %f %f\n%f %f %f\n", &field[i][0], &field[i][1], &field[i][2], &field[i][3], &field[i][4], &field[i][5], &field[i][6], &field[i][7], &field[i][8]);
+    //        if (feof(file)) break;
+    //    }
+    //    fclose(file);
+
+
+
+
+    //    stores the tensor field
+    //    for (int i = 0; i < tamanho; ++i) {
+    //        fread(&confidence[i], sizeof (float), 1, file);
+    //        fread(&field[i][0], sizeof (float) + sizeof (float) + sizeof (float), 1, file);
+    //        fread(&field[i][4], sizeof (float) + sizeof (float), 1, file);
+    //        fread(&field[i][8], sizeof (float), 1, file);
+    //        field[i][3] = field[i][1];
+    //        field[i][6] = field[i][2];
+    //        field[i][7] = field[i][5];
+    //
+    //        unsigned int *dummy = (unsigned int*) &confidence[i];
+    //        endian_swap(&dummy[0]);
+    //        // printf("%f \n",confidence[i]);
+    //
+    //        dummy = (unsigned int*) &field[i][0];
+    //
+    //        endian_swap(&dummy[0]);
+    //        endian_swap(&dummy[1]);
+    //        endian_swap(&dummy[2]);
+    //        endian_swap(&dummy[3]);
+    //        endian_swap(&dummy[4]);
+    //        endian_swap(&dummy[5]);
+    //        endian_swap(&dummy[6]);
+    //        endian_swap(&dummy[7]);
+    //        endian_swap(&dummy[8]);
+    //
+    //    }
+    //    fclose(file);
+
+    //  formatting the input volume into a tensor grid
+    //    for (unsigned int z = 0; z < fdepth; z++)
+    //        for (unsigned int y = 0; y < fheight; y++)
+    //            for (unsigned int x = 0; x < fwidth; x++) {
+    //                gcgCOPYMATRIX3(grid_entrada->data[z * fwidth * fheight + y * fwidth + x], field[z * fwidth * fheight + y * fwidth + x]);
+    //            }
+
+
+    //  gcgGCGTENSORGENERATE* generate = new gcgGCGTENSORGENERATE(fwidth,fheight, fdepth);
+    //
+    //   for(int i = 0; i < tamanho; ++i){
+    //         gcgCOPYMATRIX3(field[i],generate->grid->data[i]);
+    //   }
+    //
+
+    //   for (unsigned int z = 0; z < fdepth; z++)
+    //     for (unsigned int y = 0; y < fheight; y++)
+    //        for (unsigned int x = 0; x < fwidth; x++){
+    //
+    //            gcgCOPYMATRIX3( grid_entrada->data[z* fwidth * fheight + y*fwidth+ x],generate->grid->data[z* fwidth * fheight + y*fwidth+ x] );
+    //
+    //
+    //    }
+
+int partition32(Item a[], int l, int r) {
+    int i = l - 1, j = r;
+    Item v = a[r];
+    for (;;) {
+        while (((a [ ++i ])->cl < (v)->cl));
+        while (((v)->cl < (a [ --j ])->cl)) if (j == l) break;
+        if (i >= j) break;
+        {
+            Item t = a[i];
+            a[i] = a[j];
+            a[j] = t;
+        };
+    }
+    {
+        Item t = a[i];
+        a[i] = a[r];
+        a[r] = t;
+    };
+    return i;
+}
+
+void quicksortM32(Item a[], int l, int r) {
+    int i;
+    if (r - l <= 10) return;
+    {
+        Item t = a[(l + r) / 2];
+        a[(l + r) / 2] = a[r - 1];
+        a[r - 1] = t;
+    };
+    if (( ( (a[r - 1])->cp * (a[r - 1])->k3 ) < ( (a[l])->cp * (a[l])->k3 ) )) {
+        Item t = a [ l ];
+        a [ l ] = a [ r - 1 ];
+        a [ r - 1 ] = t;
+    };
+    if (( ( (a[r])->cp * (a[r])->k3 ) < ( (a[l])->cp *  (a[l])->k3 ) )) {
+        Item t = a [ l ];
+        a [ l ] = a [ r ];
+        a [ r ] = t;
+    };
+    if (( ( (a[r])->cp * (a[r])->k3 ) < ( (a[r-1])->cp * (a[r-1])->k3 ) )) {
+        Item t = a [ r - 1 ];
+        a [ r - 1 ] = a [ r ];
+        a [ r ] = t;
+    };
+    i = partition32(a, l + 1, r - 1);
+    quicksortM32(a, l, i - 1);
+    quicksortM32(a, i + 1, r);
+}
+
+void sortM32(Item a[], int l, int r) {
+    quicksortM32(a, l, r);
+    insertionSort(a, r);
+}
+
+
+
+
+int partition32(Item a[], int l, int r)
+  {  int i = l-1, j = r; Item v = a[r];
+    for (;;)
+      {
+        while (less(a[++i], v)) ;
+        while (less(v, a[--j])) if (j == l) break;
+        if (i >= j) break;
+        exch(a[i], a[j]);
+      }
+    exch(a[i], a[r]);
+    return i;
+  }
+
+void quicksortM32(Item a[], int l, int r)
+  { int i;
+    if (r-l <= M) return;
+    exch(a[(l+r)/2], a[r-1]);
+    compexch(a[l], a[r-1]);
+      compexch(a[l], a[r]);
+        compexch(a[r-1], a[r]);
+    i = partition32(a, l+1, r-1);
+    quicksortM32(a, l, i-1);
+    quicksortM32(a, i+1, r);
+  }
+
+void sortM32(Item a[], int l, int r)
+  {
+    quicksortM32(a, l, r);
+    insertionSort(a, r);
+  }
+
+
+
+void resetParticle(){
+
+//   int w = 0;
+//   for(unsigned int i = 1; i < fwidth; i++)
+//    for(unsigned int j = 1; j < fheight; j++)
+//      for(unsigned int k = 1; k < fdepth; k++){
+//        if (w < nParticles){
+//         gcgParticleSPH* p = geometry->particles[w];
+//         p->pos[0] = (float) i+10.5f;
+//         p->pos[1] = (float) j+10.5f;
+//         p->pos[2] = (float) k+0.5f;
+//         w++;
+//        }
+//      }
+
+
+// for(unsigned int i = 0; i < nParticles; i++){
+//  geometry->removeParticle(i);
+// }
+//
+//nParticles = 1014;
+//VECTOR3 pos;
+//    for(unsigned int i = 1; i < fwidth; i++)
+//    for(unsigned int j = 1; j < fheight; j++)
+//      for(unsigned int k = 1; k < fdepth; k++){
+//        if (i*j*k < nParticles){
+//         pos[0] = (float) i+10.5f;
+//         pos[1] = (float) j+5.5f;
+//         pos[2] = (float) k+0.5f;
+//        geometry->addParticle(new gcgParticleSPH(mass, 0.5f, initialDensity, pos));
+//        }
+//      }
+}
+
+void orderByCs(){
+//    glyphs_original
+// printf("*");
+//    int size = fwidth * fheight * fdepth;
+//    first = glyphs_original[0];
+//    gcgTENSORGLYPH *atual =  glyphs_original[0];
+//     gcgTENSORGLYPH *prev =  glyphs_original[0];
+//    atual->next = NULL;
+//
+//   for (int i = 1; i < size; i++){
+//       printf("*");
+//       atual = first;
+//
+//       while((atual->next != NULL) && (glyphs_original[i]->cs >= atual->cs)){
+//           prev = atual;
+//           atual = atual->next;
+//       }
+//
+//       if (glyphs_original[i]->cs < first->cs)
+//           first = glyphs_original[i];
+//       glyphs_original[i]->next = atual;
+//       prev->next = glyphs_original[i];
+//
+//   }
+
+
+//
+//
+//
+//    for (int i = 1; i < size; i++) {
+//       atual = first;
+//
+//       while (atual->next != NULL && atual->cs <= glyphs_original[i]->cs){
+//           atual = atual->next;
+//       }
+//       if (atual->next != NULL){
+//           if (atual->cs <=  first->cs){
+//               glyphs_original[i]->next = first;
+//               first =  glyphs_original[i];
+//           }else{
+//               atual->next = glyphs_original[i];
+//               glyphs_original[i]->next = atual;
+//           }
+//       }else {
+//
+//           glyphs_original[i]->next = NULL;
+//           atual->next = glyphs_original[i];
+//       }
+//
+//
+//       printf("%d ",i);
+//    }
+
+
+//
+//    atual = first;
+//    int i = 0;
+//    while (atual->next != NULL){
+//      printf("%d - %f \n",i,atual->cs);
+//      atual = atual->next;
+//      i++;
+//    }
+
+
+
+}
+
+void createTensorGlyphs(gcgTENSORGLYPH** glyphs,int *nglyphs, MATRIX3* tensorField, float* confidence, unsigned int width, unsigned int height, unsigned int depth, float *bigger){
+
+
+  float cs = 0.0;
+ //creating the tensor glyphs and finding the bigger the smaller weights
+  float smaller = HUGE_VAL;
+  for(unsigned int i = 0; i < width ; i++)
+    for(unsigned int j = 0; j < height; j++)
+      for(unsigned int k = 0; k < depth; k++) {
+        VECTOR3 v = {fwidth*(float)i/(width-1), fheight*(float)j/(height-1), fdepth*(float)k/(depth-1)};
+
+        //properties of the tensor matrix
+        MATRIX3 eigenVectors;
+        VECTOR3 eigenValues;
+        gcgEigenSymmetricMatrix3(tensorField[ADDRESSVOLUME((i), (j), (k))],eigenVectors,eigenValues);
+
+        int addressG, addressV;
+        addressG = ADDRESSGLYPHS(i, j, k);
+        addressV = ADDRESSVOLUME(i, j, k);
+
+
+            glyphs[addressG] = new gcgTENSORGLYPH(tensorField[addressV],v, confidence[addressV]);
+            if (glyphs[addressG]->weight > (*bigger) ) (*bigger) = glyphs[addressG]->weight;
+            if (glyphs[addressG]->weight < smaller) smaller = glyphs[addressG]->weight;
+            (*nglyphs)++;
+
+//            if( glyphs[addressG]->cs > THRESHOLD) glyphs[addressG] = NULL;
+
+//            if( addressG  == 45034 ) printf("%f %f %f ", glyphs[addressG]->pos[0] ,glyphs[addressG]->pos[1] , glyphs[addressG]->pos[2]);
+//            else {
+//            printf("%d %d %d - %d", i , j , k, addressG);
+//            system("pause");}
+
+//if ((glyphs[addressG]->pos[0] < 10.0f) && (glyphs[addressG]->pos[1]< 10.0f) && (glyphs[addressG]->pos[2]< 10.0f) ){
+//            printf("%d %d %d - %d", i , j , k, addressG);
+//            system("pause");}
+
+
+
+  }
+
+//  printf("weights: raiz(lambda1^2 + lambda2^2 + lambda3^2)\nmaior: %f menor: %f\n", bigger, smaller);
+
+  int addressH;
+
+  //adjusting weights
+  float diff = (*bigger)  - smaller;
+  for(unsigned int i = 0; i < width; i++)
+    for(unsigned int j = 0; j < height; j++)
+      for(unsigned int k = 0; k < depth; k++){
+        addressH = ADDRESSGLYPHS(i, j, k);
+        if(glyphs[addressH] != NULL){
+          glyphs[addressH]->weight = 1 - (glyphs[addressH]->weight - smaller) / diff;
+        }
+      }
+  printf("amount of tensor: %d\n",(*nglyphs));
+}
+
+//ADVECTION
+     int posX, posY, posZ, pos;
+     VECTOR3 scaleVel;
+    for (int i = 0; i < nParticles-1; i++){
+           gcgParticleSPH* p = geometry->particles[i];
+
+           posX = ((unsigned int) p->pos[0] * (fwidth - 1))/(unsigned int) fwidth;
+           posY = ((unsigned int) p->pos[1] * (fheight - 1))/(unsigned int) fheight;
+           posZ = ((unsigned int) p->pos[2] * (fdepth - 1))/(unsigned int) fdepth;
+           pos = ADDRESSVOLUME(posX, posY, posZ);
+//           if (glyphs_original[pos]->cs > 0.9)
+//           {
+//               geometry->removeParticle(i);
+//               nParticles--;
+//           }else
+//           if ((posX < fwidth ) && (posY < fheight ) && (posZ < fdepth ))  {
+
+           if ((posX < fwidth ) && (posY < fheight ) && (posZ < fdepth ) && (glyphs_original[pos]->cs < 0.8 ) && (gcgDOTVECTOR3(velField[pos],p->pos) >= 0) )  {
+//           if ((posX < fwidth ) && (posY < fheight ) && (posZ < fdepth ) && (glyphs_original[pos]->cs < 0.8 ) )  {
+               if ( i <= (nParticles / 2) )
+                 gcgSCALEVECTOR3(scaleVel,velField[pos],0.5f) //dt = 0.5
+               else
+                 gcgSCALEVECTOR3(scaleVel,velField[pos],-0.5f); //dt = 0.5;
+
+               gcgADDVECTOR3(p->pos,p->pos,scaleVel);
+                geometry->particles[i] = p;
+//                gcgCOPYVECTOR3(geometry->particles[i],p);
+//                gcgNORMALIZEVECTOR3(scaleVel,velField[pos]);
+//                gcgSCALEVECTOR3(scaleVel,scaleVel,0.05f); //dt = 0.5
+//                gcgADDVECTOR3(p->pos,p->pos,scaleVel);
+//                gcgCOPYVECTOR3(geometry->particles[i],p);
+           }else{
+//                gcgCOPYVECTOR3(p->pos, p->startPos);
+
+
+                 p->pos[0] = (float) randonGenerate.intRandom(1,fwidth -5);
+                 p->pos[1] = (float) randonGenerate.intRandom(1,fheight -5);
+                 p->pos[2] = (float) randonGenerate.intRandom(1,fdepth -5);
+
+
+           }
+
+
+    }
+
+
+void desenhaParticulas(gcgParticleSPH** sph){
+  vector<gcgParticleSPH*>::iterator it;
+  float cs;
+  int pos;
+  int nParticles = geometry->nparticle;
+  gcgParticleSPH** particles = geometry->particles;
+  for (int i = 0; i < nParticles-1; i++){
+    gcgParticleSPH* p = particles[i];
+
+    glPushMatrix();
+//      if(i == currentParticle){
+//        if (drawInfluence){
+//        glColor3f(0.1,0.1,0);
+//        glPushMatrix();
+//        glTranslatef(p->pos[0], p->pos[1], p->pos[2]);
+//        glutWireSphere(sph->influenceRadius,5,5);
+//        glPopMatrix();
+//        }
+//        glColor3f(0.6,0,0);
+//      }
+//      else glColor3f(0,0,0.6);
+
+      //Color parameter
+//      glColor3f(p->color[0], p->color[1], p->color[2]);
+
+      //Blood
+
+      pos = ADDRESSVOLUME( (int) p->pos[0], (int) p->pos[1], (int) p->pos[2]);
+//      printf(" %f - %f - %f \n",p->pos[0], p->pos[1], p->pos[2] );
+      if (pos >= 59280)
+          printf("STTTTOOOOOOPPPP - %d \n ",pos);
+
+      if (glyphs_original[pos]) cs = 1.05f - glyphs_original[pos]->cs; else  cs = 0.0;
+//       cs = 1.0;
+        if ( i <= (nParticles / 2) )
+            glColor4f(1.0,1.0, 0.0,cs );
+        else
+            glColor4f(0.0,1.0, 0.0,cs );
+
+      glTranslatef(p->pos[0], p->pos[1], p->pos[2]);
+//      if (glyphs_original[pos]) glyphs_original[pos]->draw();
+      glutSolidSphere(p->radius,10, 10);
+    glPopMatrix();
+  }
+
+//  gcgParticleSPH* p = particles[currentParticle];
+//  sph_neighbour_list *nlist = &sph->geometry->n_list;
+//    int index = p->index;
+//    for (int j = 0; j < nlist->sizes[index]; j++){
+//      int nindex = nlist->p[index][j].index;
+//      if (index == nindex) continue;
+//      glColor3f(0.6,0.6,0);
+//      glPushMatrix();
+//      gcgParticleSPH* neighbour = particles[nindex];
+//      glTranslatef(neighbour->pos[0], neighbour->pos[1], neighbour->pos[2]);
+//      glutSolidSphere(neighbour->radius,10, 10);
+//      glPopMatrix();
+//    }
+
+}
+
+
+void drawHeap() {
+
+    glBegin(GL_LINES);
+
+    for (int i = 0; i < (totalSize/2); i++) {
+         glColor3f(1.0, 1.0, 1.0);
+         glVertex3d(tensor_heap[i]->pos[0], tensor_heap[i]->pos[1],tensor_heap[i]->pos[2]);
+         glColor3f(1.0, 0.0, 1.0);
+         glVertex3d(tensor_heap[2*i]->pos[0], tensor_heap[2*i]->pos[1],tensor_heap[2*i]->pos[2]);
+
+          glColor3f(1.0, 1.0, 1.0);
+         glVertex3d(tensor_heap[i]->pos[0], tensor_heap[i]->pos[1],tensor_heap[i]->pos[2]);
+                  glColor3f(1.0, 0.0, 1.0);
+         glVertex3d(tensor_heap[(2*i)+1]->pos[0], tensor_heap[(2*i)+1]->pos[1],tensor_heap[(2*i)+1]->pos[2]);
+
+    }
+    glEnd();
+
+
+}
+
+ if ( (glyphs_original[i]->cl > THRESHOLD) || (glyphs_original[i]->cp > THRESHOLD)) {
+
+  int addr;
+    for (unsigned int z = 0; z < fdepth; z++)
+        for (unsigned int y = 0; y < fheight; y++)
+            for (unsigned int x = 0; x < fwidth; x++) {
+                addr = ADDRESSVOLUME((x), (y), (z));
+                 if ( (glyphs_original[addr]->cl > THRESHOLD) || (glyphs_original[addr]->cp > THRESHOLD))
+                createTensorline(velField, glyphs_original, &noriginals, fwidth, fheight, fdepth, x, y, z, bigger);
+            }
+
+
+
+ //ADVECTION
+    int posX, posY, posZ, pos, n, pPos, pNeg;
+    float r;
+    VECTOR3 scaleVelPos, scaleVelNeg ;
+    for (int i = 0; i < nParticles - 1; i++) {
+        gcgParticleSPH* p = geometry->particles[i];
+        r = fabs(gcgRandom.random());
+        while (r > 1.0) r = fabs(gcgRandom.random());
+        n = (int) ((float) ordSize * r);
+
+        //        cout << r << " " << n << endl;
+        posX = ((unsigned int) p->pos[0] * (fwidth - 1)) / (unsigned int) fwidth;
+        posY = ((unsigned int) p->pos[1] * (fheight - 1)) / (unsigned int) fheight;
+        posZ = ((unsigned int) p->pos[2] * (fdepth - 1)) / (unsigned int) fdepth;
+        pos = ADDRESSVOLUME(posX, posY, posZ);
+
+        if ((glyphs_original[pos]->cs < 0.8) && (gcgDOTVECTOR3(velField[pos], p->pos) >= 0)) {
+
+
+
+//            if (i <= (nParticles / 2))
+//                gcgSCALEVECTOR3(scaleVelPos, velField[pos], 0.2f) //dt = 0.5
+//            else
+//                gcgSCALEVECTOR3(scaleVelNeg, velField[pos], -0.2f); //dt = 0.5;
+            gcgSCALEVECTOR3(scaleVelPos, velField[pos], 0.2f) //dt = 0.5
+            gcgSCALEVECTOR3(scaleVelNeg, velField[pos], -0.2f); //dt = 0.5;
+
+//            gcgADDVECTOR3(p->pos, p->pos, scaleVel);
+
+            gcgADDVECTOR3(scaleVelPos, p->pos, scaleVelPos);
+            gcgADDVECTOR3(scaleVelNeg, p->pos, scaleVelNeg);
+
+            pPos =  ADDRESSVOLUME(((int) scaleVelPos[0]),((int) scaleVelPos[1]),((int) scaleVelPos[2]) );
+            pNeg =  ADDRESSVOLUME(((int) scaleVelNeg[0]),((int) scaleVelNeg[1]),((int) scaleVelNeg[2]) );
+
+
+            if ((pPos < totalSize) && (pNeg < totalSize))
+            if ( (abs(glyphs_original[pos]->cl -glyphs_original[pPos]->cl )) > (abs(glyphs_original[pos]->cl -glyphs_original[pNeg]->cl )) ){
+                gcgCOPYVECTOR3(p->pos , scaleVelPos );
+                gcgCOPYVECTOR3( geometry->particles[i]->vel , scaleVelPos)
+            }else{
+                gcgCOPYVECTOR3(p->pos , scaleVelNeg );
+                gcgCOPYVECTOR3( geometry->particles[i]->vel , scaleVelNeg)
+            }
+
+            geometry->particles[i] = p;
+
+
+
+
+            //Condições de contorno
+            if (((int) p->pos[0] >= fwidth) || ((int) p->pos[1] >= fheight) || ((int) p->pos[2] >= fdepth) ||
+                (p->pos[0] < 0.0) || (p->pos[1] < 0.0) || (p->pos[2] < 0.0)) {
+                p->pos[0] = tensor_ord[n]->pos[0];
+                p->pos[1] = tensor_ord[n]->pos[1];
+                p->pos[2] = tensor_ord[n]->pos[2];
+            }
+
+        } else {
+            p->pos[0] = tensor_ord[n]->pos[0];
+            p->pos[1] = tensor_ord[n]->pos[1];
+            p->pos[2] = tensor_ord[n]->pos[2];
+        }
+    }
+
+
+
+
+ for (unsigned int i = 1; i < nParticles; i++) {
+        r = fabs(gcgRandom.random());
+        while (r > 1.0) r = fabs(gcgRandom.random());
+        n = (int) ((float) ordSize * r);
+        pos[0] = tensor_ord[n]->pos[0];
+        pos[1] = tensor_ord[n]->pos[1];
+        pos[2] = tensor_ord[n]->pos[2];
+
+
+        gcgSCALEVECTOR3(posP, pos, 0.2f); //dt = 0.5;
+        gcgSCALEVECTOR3(posN, pos, -0.2f); //dt = 0.5;
+        gcgADDVECTOR3(posP, posP, pos);
+        gcgADDVECTOR3(posN, posN, pos);
+
+        pp = ADDRESSVOLUME(((int) posP[0]), ((int) posP[1]), ((int) posP[2]));
+        pn = ADDRESSVOLUME(((int) posN[0]), ((int) posN[1]), ((int) posN[2]));
+        p = ADDRESSVOLUME(((int) pos[0]), ((int) pos[1]), ((int) pos[2]));
+
+        //        if ( (pp < totalSize) && (fabs(glyphs_original[p]->cp -glyphs_original[pp]->cp )) > (fabs(glyphs_original[p]->cp -glyphs_original[pn]->cp )) ){
+        if ((pp < totalSize) && (glyphs_original[pp]->cp > glyphs_original[pn]->cp))
+            geometry->addParticle(new gcgParticleSPH(mass, 0.15f, initialDensity, pos, 1.0));
+        else if (pn < totalSize)
+            geometry->addParticle(new gcgParticleSPH(mass, 0.15f, initialDensity, pos, -1.0));
+        else
+            i--;
+
+
+
+
+    }
+
+ //Reverse way
+//
+//        gcgCOPYVECTOR3(v1,start);
+//        gcgSETVECTOR3(vIn,0.0,0.0,0.0);
+//        gcgSETVECTOR3(vOut,0.0,0.0,0.0)
+////    if (gcgDOTVECTOR3(mainDirection, v1) < 0)
+//        gcgSCALEVECTOR3(v1, v1, (-1.0 * (glyphs[adressG]->cl)));
+//        gcgSCALEVECTOR3(vIn, vIn, 1.0 - wPunct);
+//        gcgSCALEVECTOR3(vOut, vOut, wPunct);
+//        gcgADDVECTOR3(vAux, vIn, vOut);
+//        gcgSCALEVECTOR3(vAux, vAux, 1.0 - glyphs[adressG]->cl);
+//        gcgADDVECTOR3(vProp, vAux, v1);
+//
+//
+//        if (gcgLENGTHVECTOR3(vField[adressG]) < gcgLENGTHVECTOR3(vProp))
+//            gcgCOPYVECTOR3(vField[adressG], vProp);
+//
+//        //printf("%f %f %f | %f %f %f | %f %f %f | %f\n",vProp[0],vProp[1],vProp[2],v1[0],v1[1],v1[2],glyphs[adressG]->eigenVectors[0], glyphs[adressG]->eigenVectors[1],glyphs[adressG]->eigenVectors[2],glyphs[adressG]->cl );
+//
+//        //assumindo dt = 1
+//        gcgADDVECTOR3(nextPos, glyphs[adressG]->pos, vProp);
+//
+//
+//        posX = ((unsigned int) nextPos[0] * (width - 1)) / (unsigned int) fwidth;
+//        posY = ((unsigned int) nextPos[1] * (height - 1)) / (unsigned int) fheight;
+//        posZ = ((unsigned int) nextPos[2] * (depth - 1)) / (unsigned int) fdepth;
+//
+//
+//
+//        while ((posX < (unsigned int) fwidth) && (posY < (unsigned int) fheight) && (posZ < (unsigned int) fdepth) && (posX > 0) && (posY > 0) && (posZ > 0) && (adressG < *nglyphs) && (adressG != ADDRESSGLYPHS(posX, posY, posZ))) {
+//
+//            if (gcgDOTVECTOR3(vIn, v1) < 0) gcgSCALEVECTOR3(v1, v1, -1);
+//            adressG = ADDRESSGLYPHS(posX, posY, posZ);
+//            gcgCOPYVECTOR3(vIn, vProp);
+//
+//            gcgAPPLYMATRIX3VECTOR3(vOut, glyphs[adressG]->tensor, vIn);
+//
+//            if ((glyphs[adressG]->eigenValues[0] > glyphs[adressG]->eigenValues[1]) && (glyphs[adressG]->eigenValues[0] > glyphs[adressG]->eigenValues[2]))
+//                gcgSETVECTOR3(v1, glyphs[adressG]->eigenVectors[0], glyphs[adressG]->eigenVectors[1], glyphs[adressG]->eigenVectors[2])
+//            else if ((glyphs[adressG]->eigenValues[1] > glyphs[adressG]->eigenValues[0]) && (glyphs[adressG]->eigenValues[1] > glyphs[adressG]->eigenValues[2]))
+//                gcgSETVECTOR3(v1, glyphs[adressG]->eigenVectors[3], glyphs[adressG]->eigenVectors[4], glyphs[adressG]->eigenVectors[5])
+//            else if ((glyphs[adressG]->eigenValues[2] > glyphs[adressG]->eigenValues[0]) && (glyphs[adressG]->eigenValues[2] > glyphs[adressG]->eigenValues[1]))
+//                gcgSETVECTOR3(v1, glyphs[adressG]->eigenVectors[6], glyphs[adressG]->eigenVectors[7], glyphs[adressG]->eigenVectors[8]);
+//
+//            gcgSCALEVECTOR3(v1, v1, (-1.0 * (glyphs[adressG]->cl)));
+//            gcgSCALEVECTOR3(vIn, vIn, 1.0 - wPunct);
+//            gcgSCALEVECTOR3(vOut, vOut, wPunct);
+//            gcgADDVECTOR3(vAux, vIn, vOut);
+//            gcgSCALEVECTOR3(vAux, vAux, 1.0 - glyphs[adressG]->cl);
+//            gcgADDVECTOR3(vProp, vAux, v1);
+//
+//
+//            if (gcgLENGTHVECTOR3(vField[adressG]) < gcgLENGTHVECTOR3(vProp))
+//                gcgCOPYVECTOR3(vField[adressG], vProp);
+//
+//            //assumindo dt = 1
+//            gcgADDVECTOR3(nextPos, glyphs[adressG]->pos, vProp);
+//
+//            glyphs[adressG]->tnumber = (((float)i)/( (float) totalSize));
+////            cout << glyphs[adressG]->tnumber << endl;
+//
+//            posX = ((unsigned int) nextPos[0] * (width - 1)) / (unsigned int) fwidth;
+//            posY = ((unsigned int) nextPos[1] * (height - 1)) / (unsigned int) fheight;
+//            posZ = ((unsigned int) nextPos[2] * (depth - 1)) / (unsigned int) fdepth;
+//
+//            aux++;
+//
+//            //    printf("%f ",posX);
+//            //    printf("%f ",posY);
+//            //    printf("%f ",posZ);
+//            //    printf("%f |",vProp[0]);
+//            //    printf("%f |",vProp[1]);
+//            //     printf("%f \n",vProp[2]);
+//
+//        }
+//
+//        //Detectando extremos
+//        if (adressG == ADDRESSGLYPHS(posX, posY, posZ))
+//            glyphs[adressG]->otm = true;
+//
+
+
+
+CILINDER
+
+/*************************************************************************************
+    GCG - GROUP FOR COMPUTER GRAPHICS
+        Universidade Federal de Juiz de Fora
+        Instituto de Ciências Exatas
+        Departamento de Ciência da Computação
+
+ **************************************************************************************/
+
+
+#define THRESHOLD 0.58
+//#define INPUT "dt-helix.raw"
+#define INPUT "field1.txt"
+//#define INPUT "torsion_1N.dat"
+//Caminhando na direção X -> Y -> Z
+#define ADDRESSVOLUME(a, b, c)  (((b) * (fwidth) ) + (a) + ((c) * (fwidth) * (fheight)))
+#define ADDRESSGLYPHS(a, b, c)  (((b) * (width)  ) + (a) + ((c) * (width)  * (height)))
+#define CHANGEFIELD 99987 //ID para GLUI
+
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glut.h>
+#include <math.h>
+#include <time.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
+
+#include "glui.h"
+#include "gcg.h"
+#include "tensorglyph.h"
+#include "tensorgrid.h"
+#include "tensorline.h"
+#include "optimizedGrid.h"
+#include "tensorgenerate.h"
+#include "tensorHeap.h"
+#include "quicksort.h"
+
+
+gcgFRUSTUM frustum;
+gcgTENSORGLYPH* t1;
+gcgTENSORGLYPH* t2;
+gcgTENSORGLYPH* ti;
+
+MATRIX3 *volume = NULL;
+
+gcgOptimizedGridSPH *geometry;
+
+int noriginals = 0;
+gcgTENSORGLYPH **glyphs_original;
+gcgTENSORGLYPH **tensor_ord;
+
+static gcgRANDOMGAUSSIAN gcgRandom;
+
+VECTOR3 *velField;
+
+gcgTEXT texto;
+
+//  pointer to the GLUI window
+GLUI * glui_window;
+
+//constantes para a GLUT
+int janela;
+int largura;
+int altura;
+int iniX, iniY;
+int gira = FALSE;
+int translada = FALSE;
+float velocidadeFrente = 0;
+float velocidadeLado = 0;
+float dt = 0;
+clock_t tempoant = 0;
+int ordSize = 0;
+
+//opcoes da aplicacao
+bool drawMesh = false;
+bool drawPart = true;
+bool translationMode = false;
+bool original = true;
+bool drawTens = false;
+bool interpolated_visible = false;
+bool drawTensor = true;
+bool clearGl = true;
+
+//  Campo selecionado no list box
+int listbox_field_id = 0;
+
+//dimensoes do campo
+//int fwidth = 40, fheight = 40, fdepth = 40; //torsion
+int fwidth = 38, fheight = 39, fdepth = 40; //helix
+//int fwidth=148, fheight=190, fdepth=160; //brain
+unsigned int nParticles = 1000;
+
+float initialDensity = 10;
+float totalSpace = (float) fwidth * (float) fheight * (float) fdepth;
+int totalSize = fwidth * fheight * fdepth;
+float mass = initialDensity * totalSpace / (nParticles * 10.5);
+float radius = pow(0.75 * mass / (initialDensity * M_PI), 1.0 / 3.0);
+
+float initialDistance = 3.0 * radius;
+float influenceFactor = 2;
+float smoothWidth = 1.3 * initialDistance;
+float influenceRadius = smoothWidth * influenceFactor;
+VECTOR3 obs;
+
+
+GLfloat gAngle = 0.0;
+GLUquadricObj *IDquadric;
+
+/////////////////////////////////////////////////////////////////////////////////////
+// Calcula a quantidade de quadros pos segundo dadas as variacoes de tempo. Atualiza
+// a cada 500ms.
+/////////////////////////////////////////////////////////////////////////////////////
+
+float CalculaQuadrosSegundo(unsigned int dt) {
+    static float ultimoqps = 0.0f; // Guarda o ultimo qps calculado
+    static unsigned int contaquadro = 0; // Conta o numero de quadros a cada chamada
+    static unsigned int tempopassado = 0; // Armazena o tempo do ultimo quadro
+
+    // Incrementa o contador
+    contaquadro++;
+    tempopassado += dt;
+
+    // Testa se o tempo passado soma 1 segundo
+    if (tempopassado > 1000) {
+        // Calcula quadros por segundo
+        ultimoqps = ((float) contaquadro / (float) tempopassado) * 1000.f;
+
+        // Zera contador de tempo
+        tempopassado = 0;
+
+        // Zera contador de quadros
+        contaquadro = 0;
+    }
+
+    // Retorna quadros por segundo
+    return ultimoqps;
+}
+
+void ConfiguraOpenGL() {
+    glClearColor(0.2f, 0.2f, 0.2f, 1.0f); //RGBA
+    glShadeModel(GL_SMOOTH);
+
+    //teste de buffer
+    glClearDepth(1.0f);
+    glEnable(GL_DEPTH_TEST);
+    glDepthFunc(GL_LEQUAL);
+
+    glEnable(GL_CULL_FACE);
+    //glEnable(GL_TEXTURE_2D);
+    glTexEnvi(GL_TEXTURE_ENV, GL_TEXTURE_ENV_MODE, GL_REPLACE);
+
+
+}
+
+
+// Função callback chamada quando o tamanho da janela é alterado
+
+void alteraTamanhoJanela(GLsizei w, GLsizei h) {
+    clearGl = true;
+    // Para previnir uma divisão por zero
+    if (h == 0) h = 1;
+
+    // Especifica o tamanho da viewport
+    glViewport(0, 0, w, h);
+
+    largura = w;
+    altura = h;
+
+    frustum.setPerspective(40.0, (float) w / (float) h, 0.1, 3000.0);
+}
+
+void teclado(unsigned char tecla, int x, int y) {
+    clearGl = true;
+    switch (tecla) {
+        case 'w':
+        case 'W': velocidadeFrente = sqrt(frustum.x * frustum.x + frustum.y * frustum.y + frustum.z * frustum.z);
+            break;
+        case 's':
+        case 'S': velocidadeFrente = -sqrt(frustum.x * frustum.x + frustum.y * frustum.y + frustum.z * frustum.z);
+            break;
+        case 'a':
+        case 'A': velocidadeLado = -sqrt(frustum.x * frustum.x + frustum.y * frustum.y + frustum.z * frustum.z);
+            break;
+        case 'd':
+        case 'D': velocidadeLado = sqrt(frustum.x * frustum.x + frustum.y * frustum.y + frustum.z * frustum.z);
+            break;
+        case 'l':
+        case 'L': drawMesh = !drawMesh;
+            glutPostRedisplay(); // Manda redesenhar a janela
+            break;
+        case 'p':
+            glutPostRedisplay(); // Manda redesenhar a janela
+            break;
+        case ' ': velocidadeFrente = velocidadeLado = 0;
+            break;
+        case 'n':
+        case 'N': drawPart = !drawPart;
+            break;
+        case 't':
+        case 'T': translationMode = !translationMode;
+            break;
+        case 'g':
+        case 'G': clearGl = !clearGl;
+            break;
+        case 'o':
+        case 'O': original = !original;
+            break;
+        case 'c':
+        case 'C': drawTens = !drawTens;
+            break;
+        case 'i':
+        case 'I': interpolated_visible = !interpolated_visible;
+            break;
+        case 'r':
+        case 'R': geometry->resetParticles();
+            break;
+        case 'v':
+        case 'V': drawTensor = !drawTensor;
+            break;
+        default: break;
+    }
+}
+
+void calcDist2Obs(gcgTENSORGLYPH** v, int size) {
+    for (int i = 0; i < size; i++) {
+        v[i]->dist2Obs = (((frustum.x - v[i]->pos[0]) *(frustum.x - v[i]->pos[0]))
+                +((frustum.y - v[i]->pos[1]) *(frustum.y - v[i]->pos[1]))
+                +((frustum.z - v[i]->pos[2]) *(frustum.z - v[i]->pos[2])));
+        v[i]->dist2Obs = v[i]->dist2Obs * v[i]->dist2Obs;
+    }
+
+
+}
+
+void calcK2(gcgTENSORGLYPH** v, int size) {
+    VECTOR3 obs, e3;
+    for (int i = 0; i < size; i++) {
+        gcgSETVECTOR3(e3, v[i]->eigenVectors[6], v[i]->eigenVectors[7], v[i]->eigenVectors[8]);
+        gcgSETVECTOR3(obs, (v[i]->pos[0] - frustum.x), (v[i]->pos[1] - frustum.y), (v[i]->pos[2] - frustum.z));
+        gcgNORMALIZEVECTOR3(obs, obs);
+        v[i]->k2 = gcgDOTVECTOR3(e3, obs);
+    }
+
+
+}
+
+void calcCurv(gcgTENSORGLYPH** v, int size) {
+    int p;
+    float temp;
+    VECTOR3 fstD, sndD, fpH, fmH;
+    for (int i = 0; i < size; i++) {
+
+
+        p = ADDRESSVOLUME(((int) v[i]->pos[0]), ((int) v[i]->pos[1]), ((int) v[i]->pos[2]));
+
+
+
+        gcgADDVECTOR3(fpH, v[i]->pos, velField[p]); // +h
+        gcgSCALEVECTOR3(fmH, velField[p], -1.0);
+        gcgADDVECTOR3(fmH, v[i]->pos, fmH); //-h
+
+        //Finite difference foward with h=1
+        //First derivative
+        gcgSCALEVECTOR3(fstD, velField[p], -1.0);
+        p = ADDRESSVOLUME(((int) fpH[0]), ((int) fpH[1]), ((int) fpH[2]));
+        gcgADDVECTOR3(fstD, fstD, velField[p]);
+
+        //Second derivative
+        p = ADDRESSVOLUME(((int) v[i]->pos[0]), ((int) v[i]->pos[1]), ((int) v[i]->pos[2]));
+        gcgSCALEVECTOR3(sndD, velField[p], -2.0);
+        p = ADDRESSVOLUME(((int) fpH[0]), ((int) fpH[1]), ((int) fpH[2]));
+        gcgADDVECTOR3(sndD, sndD, velField[p]);
+        p = ADDRESSVOLUME(((int) fmH[0]), ((int) fmH[1]), ((int) fmH[2]));
+        gcgADDVECTOR3(sndD, sndD, velField[p]);
+
+
+        v[i]->curv = gcgLENGTHVECTOR3(fstD);
+        v[i]->curv = v[i]->curv * v[i]->curv * v[i]->curv;
+        v[i]->curv = v[i]->curv * v[i]->curv;
+        temp = gcgDOTVECTOR3(fstD, sndD);
+        temp = temp*temp;
+        v[i]->curv = temp / v[i]->curv;
+
+    }
+
+
+}
+
+void tecladoEspecial(int tecla, int x, int y) {
+
+}
+
+
+// Funcao de simulacao de tempo
+
+void simulacao(void) {
+    glutSetWindow(janela);
+    static clock_t tempoini = 0;
+    clock_t tempo;
+
+
+    gcgRANDOMGAUSSIAN gcgRandom;
+
+
+    tempo = clock();
+    dt = ((float) (tempo - tempoini) / (float) CLOCKS_PER_SEC);
+    if (dt < EPSILON) return; // Nothing to do
+    if (dt > 0.1) dt = 0.1;
+
+    ////////////////////////////////////////////////////
+    // Aqui podemos atualizar TODOS os agentes da cena
+
+    // Atualiza a posicao da camera em movimento. Mas só se for necessario.
+    //if(fabs(velocidadeFrente) > 0.1 || fabs(velocidadeLado) > 0.1) {
+    float x = frustum.x, y = frustum.x, z = frustum.z; // Save
+
+    frustum.advancePosition((float) velocidadeFrente * dt, 0.0f, (float) velocidadeLado * dt);
+    if (sqrt(frustum.x * frustum.x + frustum.y * frustum.y + frustum.z * frustum.z) < 0.6) frustum.setPosition(x, y, z); // restore if too close
+    if (!translationMode) frustum.setTarget(0.f, 0.f, 0.f); // Ajusta as direcoes para visualizar o alvo.
+
+    velocidadeFrente -= velocidadeFrente * dt * 2;
+    velocidadeLado -= velocidadeLado * dt * 2;
+
+
+    //
+    //////         quickSort(tensor_ord, ordSize,frustum);
+    //    if ((obs[0] != frustum.x) ||(obs[1] != frustum.y) || (obs[2] != frustum.z)){
+    //
+    //        calcDist2Obs(tensor_ord,ordSize);
+    ////        bubble(tensor_ord, ordSize - 1);
+    ////        quicksort(tensor_ord, 0, ordSize - 1);
+    //        insertionSort(tensor_ord, ordSize-1);
+    //
+    //    }
+
+    //Calculo dos parametros dependentes da posição
+    if ((obs[0] != frustum.x) || (obs[1] != frustum.y) || (obs[2] != frustum.z)) {
+        calcDist2Obs(tensor_ord, ordSize);
+        calcK2(tensor_ord, ordSize);
+    }
+
+    //ADVECTION
+    //    int posX, posY, posZ, pos, n, pp, pn;
+    //    float r;
+    //    VECTOR3 scaleVel, posP, posN;
+    int posX, posY, posZ, pos, n;
+    float r;
+    VECTOR3 scaleVel;
+    VECTOR3 mainDirect = {0.0, 0.0, 0.0};
+
+
+    for (int i = 0; i < nParticles - 1; i++) {
+        gcgParticleSPH* p = geometry->particles[i];
+
+
+
+        r = fabs(gcgRandom.random());
+        while ((r > 1.0 || r < 0.0))
+            r = fabs(gcgRandom.random());
+        n = (int) ((float) ordSize * r);
+
+        posX = ((unsigned int) p->pos[0] * (fwidth - 1)) / (unsigned int) fwidth;
+        posY = ((unsigned int) p->pos[1] * (fheight - 1)) / (unsigned int) fheight;
+        posZ = ((unsigned int) p->pos[2] * (fdepth - 1)) / (unsigned int) fdepth;
+        pos = ADDRESSVOLUME(posX, posY, posZ);
+
+        //        if ((posX - 1 >= 0) && (posX + 1 < ((int) fwidth)))
+        //            if (glyphs_original[(ADDRESSVOLUME(posX + 1, posY, posZ))]->cp > glyphs_original[(ADDRESSVOLUME(posX - 1, posY, posZ))]->cp)
+        //                mainDirect[0] = 1.0;
+        //            else
+        //                mainDirect[0] = -1.0;
+        //
+        //        if ((posY - 1 >= 0) && (posY + 1 < ((int) fheight)))
+        //            if (glyphs_original[(ADDRESSVOLUME(posX, posY + 1, posZ))]->cp > glyphs_original[(ADDRESSVOLUME(posX, posY - 1, posZ))]->cp)
+        //                mainDirect[1] = 1.0;
+        //            else
+        //                mainDirect[1] = -1.0;
+        //
+        //        if ((posZ - 1 >= 0) && (posZ + 1 < ((int) fdepth)))
+        //            if (glyphs_original[(ADDRESSVOLUME(posX, posY, posZ + 1))]->cp > glyphs_original[(ADDRESSVOLUME(posX, posY, posZ - 1))]->cp)
+        //                mainDirect[2] = 1.0;
+        //            else
+        //                mainDirect[2] = -1.0;
+        //
+        //
+        //
+        //                if (gcgDOTVECTOR3(velField[pos], mainDirect) >= 0)
+        //                      p->direc =  1.0;
+        //                else
+        //                      p->direc = -1.0;
+
+
+        //             p->direc = gcgDOTVECTOR3(velField[pos], mainDirect);
+
+
+
+        if ((glyphs_original[pos]->cs < 0.8) && (gcgDOTVECTOR3(velField[pos], p->pos) >= 0)) {
+            //          if (glyphs_original[pos]->cs < 0.8) {
+            //            if (i <= (nParticles / 2))
+            //                gcgSCALEVECTOR3(scaleVel, velField[pos], 0.2f) //dt = 0.5
+            //            else
+            //                gcgSCALEVECTOR3(scaleVel, velField[pos], -0.2f); //dt = 0.5;
+
+
+            //               gcgSCALEVECTOR3(posP, velField[pos], 0.2f); //dt = 0.5;
+            //               gcgSCALEVECTOR3(posN, velField[pos], -0.2f); //dt = 0.5;
+            //               gcgADDVECTOR3(posP, posP, velField[pos]);
+            //               gcgADDVECTOR3(posN, posN, velField[pos]);
+            //
+            //               pp =  ADDRESSVOLUME(((int) posP[0]),((int) posP[1]),((int) posP[2]) );
+            //               pn =  ADDRESSVOLUME(((int) posN[0]),((int) posN[1]),((int) posN[2]) );
+            ////               p  =  ADDRESSVOLUME(((int) velField[pos][0]) ,((int) velField[pos][1]) ,((int) velField[pos][2])  );
+            //
+            ////        if ( (pp < totalSize) && (fabs(glyphs_original[p]->cp -glyphs_original[pp]->cp )) > (fabs(glyphs_original[p]->cp -glyphs_original[pn]->cp )) ){
+            //          if ( (pp < totalSize) && (pp >= 0) && (glyphs_original[pp]->eigenValues[0]  > glyphs_original[pn]->eigenValues[0] ) )
+            //                p->direc = 1.0;
+            //          else if ( (pn < totalSize) && (pn >= 0))
+            //                  p->direc = -1.0;
+            //          else
+            //             i--;
+
+            pos = ADDRESSVOLUME(posX, posY, posZ);
+
+            if ((posX - 1 >= 0) && (posX + 1 < ((int) fwidth)) && (ADDRESSVOLUME(posX + 1, posY, posZ) < totalSize) && (ADDRESSVOLUME(posX - 1, posY, posZ) > 0))
+                if (glyphs_original[(ADDRESSVOLUME(posX + 1, posY, posZ))]->cp > glyphs_original[(ADDRESSVOLUME(posX - 1, posY, posZ))]->cp)
+                    mainDirect[0] = 1.0;
+                else
+                    mainDirect[0] = -1.0;
+
+            if ((posY - 1 >= 0) && (posY + 1 < ((int) fheight)) && (ADDRESSVOLUME(posX, posY + 1, posZ) < totalSize) && (ADDRESSVOLUME(posX, posY - 1, posZ) > 0))
+                if (glyphs_original[(ADDRESSVOLUME(posX, posY + 1, posZ))]->cp > glyphs_original[(ADDRESSVOLUME(posX, posY - 1, posZ))]->cp)
+                    mainDirect[1] = 1.0;
+                else
+                    mainDirect[1] = -1.0;
+
+            if ((posZ - 1 >= 0) && (posZ + 1 < ((int) fdepth)) && (ADDRESSVOLUME(posX, posY, posZ + 1) < totalSize) && (ADDRESSVOLUME(posX, posY, posZ - 1) > 0))
+                if (glyphs_original[(ADDRESSVOLUME(posX, posY, posZ + 1))]->cp > glyphs_original[(ADDRESSVOLUME(posX, posY, posZ - 1))]->cp)
+                    mainDirect[2] = 1.0;
+                else
+                    mainDirect[2] = -1.0;
+
+
+
+            if (gcgDOTVECTOR3(velField[pos], mainDirect) >= 0)
+                if (p->direc != 1.0) {
+                    p->pos[0] = tensor_ord[n]->pos[0];
+                    p->pos[1] = tensor_ord[n]->pos[1];
+                    p->pos[2] = tensor_ord[n]->pos[2];
+                    p->direc = 1.0;
+                    gcgSETVECTOR3(p->color, 1.0, 0.0, 0.0);
+
+                } else {
+
+
+                    gcgSCALEVECTOR3(scaleVel, velField[pos], (p->direc * 0.2f)) //dt = 0.5;
+                    //              gcgSCALEVECTOR3(scaleVel, velField[pos], ( 0.2f)) //dt = 0.2;
+                    gcgADDVECTOR3(p->pos, p->pos, scaleVel);
+
+                    geometry->particles[i] = p;
+
+                    gcgCOPYVECTOR3(geometry->particles[i]->vel, scaleVel);
+
+                }//                p->direc = 1.0;
+            else
+                if (p->direc != -1.0) {
+                p->pos[0] = tensor_ord[n]->pos[0];
+                p->pos[1] = tensor_ord[n]->pos[1];
+                p->pos[2] = tensor_ord[n]->pos[2];
+                p->direc = -1.0;
+                gcgSETVECTOR3(p->color, 1.0, 0.0, 0.0);
+
+            } else {
+
+
+                gcgSCALEVECTOR3(scaleVel, velField[pos], (p->direc * 0.2f)) //dt = 0.5;
+                //              gcgSCALEVECTOR3(scaleVel, velField[pos], ( 0.2f)) //dt = 0.2;
+                gcgADDVECTOR3(p->pos, p->pos, scaleVel);
+
+                geometry->particles[i] = p;
+                gcgCOPYVECTOR3(geometry->particles[i]->vel, scaleVel);
+            };
+
+
+            //Condições de contorno
+            if (((int) p->pos[0] >= fwidth) || ((int) p->pos[1] >= fheight) || ((int) p->pos[2] >= fdepth) ||
+                (p->pos[0] < 0.0) || (p->pos[1] < 0.0) || (p->pos[2] < 0.0)) {
+
+                p->pos[0] = tensor_ord[n]->pos[0];
+                p->pos[1] = tensor_ord[n]->pos[1];
+                p->pos[2] = tensor_ord[n]->pos[2];
+
+                posX = (int) p->pos[0];
+                posY = (int) p->pos[1];
+                posZ = (int) p->pos[2];
+                //                pos = ADDRESSVOLUME(posX, posY, posZ);
+                //
+                //               if ((posX - 1 >= 0) && (posX + 1 < ((int) fwidth)) && (ADDRESSVOLUME(posX + 1, posY, posZ) < totalSize) && (ADDRESSVOLUME(posX - 1, posY, posZ) > 0))
+                //                if (glyphs_original[(ADDRESSVOLUME(posX + 1, posY, posZ))]->cp > glyphs_original[(ADDRESSVOLUME(posX - 1, posY, posZ))]->cp)
+                //                    mainDirect[0] = 1.0;
+                //                else
+                //                    mainDirect[0] = -1.0;
+                //
+                //            if ((posY - 1 >= 0) && (posY + 1 < ((int) fheight)) && (ADDRESSVOLUME(posX, posY + 1, posZ) < totalSize) && (ADDRESSVOLUME(posX, posY - 1, posZ) > 0))
+                //                if (glyphs_original[(ADDRESSVOLUME(posX, posY + 1, posZ))]->cp > glyphs_original[(ADDRESSVOLUME(posX, posY - 1, posZ))]->cp)
+                //                    mainDirect[1] = 1.0;
+                //                else
+                //                    mainDirect[1] = -1.0;
+                //
+                //            if ((posZ - 1 >= 0) && (posZ + 1 < ((int) fdepth)) && (ADDRESSVOLUME(posX, posY, posZ + 1) < totalSize) && (ADDRESSVOLUME(posX, posY, posZ - 1) > 0))
+                //                if (glyphs_original[(ADDRESSVOLUME(posX, posY, posZ + 1))]->cp > glyphs_original[(ADDRESSVOLUME(posX, posY, posZ - 1))]->cp)
+                //                    mainDirect[2] = 1.0;
+                //                else
+                //                    mainDirect[2] = -1.0;
+                //
+                //
+                //
+                //                if (gcgDOTVECTOR3(velField[pos], mainDirect) >= 0)
+                //                    p->direc = 1.0;
+                //                else
+                //                    p->direc = -1.0;
+
+
+
+            }
+            //                              p->color[0] = 0.0;
+            //            p->color[1] = 0.0;
+            //            p->color[2] = 1.0;
+        } else {
+
+            //           cout << gcgDOTVECTOR3(velField[pos], p->pos) << endl;
+            p->pos[0] = tensor_ord[n]->pos[0];
+            p->pos[1] = tensor_ord[n]->pos[1];
+            p->pos[2] = tensor_ord[n]->pos[2];
+            //            p->color[0] = 1.0;
+            //            p->color[1] = 0.0;
+            //            p->color[2] = 0.0;
+
+            //            posX = (int) p->pos[0];
+            //            posY = (int) p->pos[1];
+            //            posZ = (int) p->pos[2];
+            //                pos = ADDRESSVOLUME(posX, posY, posZ);
+            //
+            //               if ((posX - 1 >= 0) && (posX + 1 < ((int) fwidth)) && (ADDRESSVOLUME(posX + 1, posY, posZ) < totalSize) && (ADDRESSVOLUME(posX - 1, posY, posZ) > 0))
+            //                if (glyphs_original[(ADDRESSVOLUME(posX + 1, posY, posZ))]->cp > glyphs_original[(ADDRESSVOLUME(posX - 1, posY, posZ))]->cp)
+            //                    mainDirect[0] = 1.0;
+            //                else
+            //                    mainDirect[0] = -1.0;
+            //
+            //            if ((posY - 1 >= 0) && (posY + 1 < ((int) fheight)) && (ADDRESSVOLUME(posX, posY + 1, posZ) < totalSize) && (ADDRESSVOLUME(posX, posY - 1, posZ) > 0))
+            //                if (glyphs_original[(ADDRESSVOLUME(posX, posY + 1, posZ))]->cp > glyphs_original[(ADDRESSVOLUME(posX, posY - 1, posZ))]->cp)
+            //                    mainDirect[1] = 1.0;
+            //                else
+            //                    mainDirect[1] = -1.0;
+            //
+            //            if ((posZ - 1 >= 0) && (posZ + 1 < ((int) fdepth)) && (ADDRESSVOLUME(posX, posY, posZ + 1) < totalSize) && (ADDRESSVOLUME(posX, posY, posZ - 1) > 0))
+            //                if (glyphs_original[(ADDRESSVOLUME(posX, posY, posZ + 1))]->cp > glyphs_original[(ADDRESSVOLUME(posX, posY, posZ - 1))]->cp)
+            //                    mainDirect[2] = 1.0;
+            //                else
+            //                    mainDirect[2] = -1.0;
+            //
+            //
+            //
+            //                if (gcgDOTVECTOR3(velField[pos], mainDirect) >= 0)
+            //                    p->direc = 1.0;
+            //                else
+            //                    p->direc = -1.0;
+
+
+        }
+    }
+
+
+
+
+
+    glutPostRedisplay(); //manda redesenhar a janela
+
+    ////////////////////////////////////////////////////
+
+    tempoini = tempo;
+}
+
+// Função callback chamada para gerenciar eventos do mouse
+
+void gerenciaMouse(int button, int state, int x, int y) {
+    clearGl = true;
+    gira = FALSE;
+    translada = FALSE;
+
+    if (state == GLUT_DOWN && button == GLUT_LEFT_BUTTON) {
+        iniX = x;
+        iniY = y;
+        gira = TRUE;
+    }
+
+    if (state == GLUT_DOWN && button == GLUT_RIGHT_BUTTON) {
+        iniX = x;
+        iniY = y;
+        translada = TRUE;
+    }
+
+}
+
+// Função callback chamada para gerenciar eventos do mouse
+
+void gerenciaMovimentoMouse(int x, int y) {
+    clearGl = true;
+    if (gira) {
+        frustum.rotateOrbitTrackball(0, 0, 0, (largura - 2.f * iniX) / largura, (altura - 2.f * y) / altura, (largura - 2.f * x) / largura, (altura - 2.f * iniY) / altura);
+        if (!translationMode) frustum.setTarget(0.f, 0.f, 0.f); // Ajusta as direcoes para visualizar o alvo.
+        glutPostRedisplay();
+    }
+
+    if (translada) {
+        frustum.advancePosition(.3 * (x - iniX), 0.0, 0.0);
+        glutPostRedisplay();
+    }
+    iniX = x;
+    iniY = y;
+}
+
+
+
+float delta = 0;
+bool cresce = true;
+
+void oscilaDelta() {
+    if (delta <= 0) cresce = true;
+    if (delta >= 1) cresce = false;
+    if (cresce) delta += 0.01f;
+    else delta -= 0.01f;
+}
+
+void drawTensorline2(VECTOR3 seed) {
+    float posX, posY, posZ;
+    int pos;
+    VECTOR3 scaleVel;
+    gcgSETVECTOR3(scaleVel, 0.0, 0.0, 0.0);
+
+
+    gcgParticleSPH* p = new gcgParticleSPH(0.0, 0.2, 1.0, seed, 1.0);
+
+
+
+    posX = 0;
+    posY = 0;
+    posZ = 1;
+    pos = ADDRESSVOLUME(posX, posY, posZ);
+
+    glPushMatrix();
+
+    while ((glyphs_original[pos]->cs < 0.8) && (gcgDOTVECTOR3(velField[pos], p->pos) >= 0)) {
+
+        gcgSCALEVECTOR3(scaleVel, velField[pos], (p->direc * 0.2f)) //dt = 0.5;
+        gcgADDVECTOR3(p->pos, p->pos, scaleVel);
+        gcgCOPYVECTOR3(p->vel, scaleVel);
+
+        glTranslatef(p->pos[0], p->pos[1], p->pos[2]);
+
+        glColor3f(0.5, 1.0, 1.0);
+        glutSolidSphere(0.5, 10, 10);
+
+        posX = ((unsigned int) p->pos[0] * (fwidth - 1)) / (unsigned int) fwidth;
+        posY = ((unsigned int) p->pos[1] * (fheight - 1)) / (unsigned int) fheight;
+        posZ = ((unsigned int) p->pos[2] * (fdepth - 1)) / (unsigned int) fdepth;
+        pos = ADDRESSVOLUME(posX, posY, posZ);
+
+
+        //Condições de contorno
+        if (((int) p->pos[0] >= fwidth) || ((int) p->pos[1] >= fheight) || ((int) p->pos[2] >= fdepth) ||
+            (p->pos[0] < 0.0) || (p->pos[1] < 0.0) || (p->pos[2] < 0.0)) {
+            glPopMatrix();
+            return;
+        }
+    }
+
+    glPopMatrix();
+
+}
+
+void drawTensorline(VECTOR3 start) {
+
+    int adressG;
+    float seedI, seedJ, seedK, color;
+    VECTOR3 pos, scaleVel;
+
+    gcgSETVECTOR3(pos, 0.0, 0.0, 0.0);
+    seedI = (unsigned int) ((start[0] * (fwidth - 1)) / fwidth);
+    seedJ = (unsigned int) ((start[1] * (fheight - 1)) / fheight);
+    seedK = (unsigned int) ((start[2] * (fdepth - 1)) / fdepth);
+    color = 0.0;
+
+    //cout << "enteou" << endl;
+    // glDisable(GL_TEXTURE_2D);
+    // glBegin(GL_LINE_STRIP);
+
+    while ((pos[0] >= 0.0) && (pos[0] < fwidth) && (pos[1] >= 0.0) && (pos[1] < fheight) && (pos[2] >= 0.0) && (pos[2] < fdepth)) {
+        //                                           && (adressG != ADDRESSVOLUME(seedI,seedJ,seedK)) ){
+
+        // while ((pos[0] < fwidth) && (pos[1] <  fheight) && (pos[2] <  fdepth) && (pos[0] > 0) && (pos[1] > 0) && (pos[2] > 0) && (adressG < totalSize) ) {
+
+        glPushMatrix();
+
+
+        glVertex3f(pos[0], pos[1], pos[2]);
+        adressG = ADDRESSVOLUME(seedI, seedJ, seedK);
+        // cout << seedI << seedJ << seedK << " " << glyphs_original[adressG]->cs << endl;
+        //    if (glyphs_original[adressG]->cs >= 0.8){
+        //        cout << "saiu" << endl;
+        //        return;}
+        gcgCOPYVECTOR3(pos, glyphs_original[adressG]->pos);
+        gcgSCALEVECTOR3(scaleVel, velField[adressG], 2.0f);
+        gcgADDVECTOR3(pos, pos, scaleVel);
+        //    glVertex3f(pos[0],pos[1],pos[2]);
+        seedI = (unsigned int) ((pos[0] * (fwidth - 1)) / fwidth);
+        seedJ = (unsigned int) ((pos[1] * (fheight - 1)) / fheight);
+        seedK = (unsigned int) ((pos[2] * (fdepth - 1)) / fdepth);
+
+        glTranslatef(pos[0], pos[1], pos[2]);
+        //      if (glyphs_original[pos]) glyphs_original[pos]->draw();
+        glColor3f(color, 1.0, 1.0);
+        glutSolidSphere(0.5, 10, 10);
+        glPopMatrix();
+        //    cout << seedI << seedJ << seedK << " " << glyphs_original[adressG]->cs << endl;
+        color = color + 0.1;
+
+        cout << pos[0] << " " << pos[1] << " " << pos[2] << endl;
+    }
+
+    cout << endl;
+    // glEnd();
+
+
+}
+
+void drawParticles(gcgParticleSPH** sph) {
+    vector<gcgParticleSPH*>::iterator it;
+    float cs;
+    int pos;
+    int nParticles = geometry->nparticle;
+    gcgParticleSPH** particles = geometry->particles;
+    for (int i = 0; i < nParticles; i++) {
+        gcgParticleSPH* p = particles[i];
+
+        glPushMatrix();
+
+        pos = ADDRESSVOLUME((int) p->pos[0], (int) p->pos[1], (int) p->pos[2]);
+        //
+        //        if (glyphs_original[pos]) cs = 1.05f - glyphs_original[pos]->cs;
+        //        else cs = 0.0;
+        cs = 1.0;
+        if (i <= (nParticles / 2))
+            glColor4f(1.0, 1.0, 0.0, cs);
+        else
+            glColor4f(0.0, 1.0, 0.0, cs);
+
+        glTranslatef(p->pos[0], p->pos[1], p->pos[2]);
+        //      if (glyphs_original[pos]) glyphs_original[pos]->draw();
+        glutSolidSphere(p->radius, 10, 10);
+        glPopMatrix();
+    }
+
+}
+
+void drawParticlesPiramid(gcgParticleSPH** sph) {
+    vector<gcgParticleSPH*>::iterator it;
+    float cs;
+    int pos;
+    int nParticles = geometry->nparticle;
+    VECTOR3 posAVector;
+
+
+
+    gcgParticleSPH** particles = geometry->particles;
+    for (int i = 0; i < nParticles - 1; i++) {
+        gcgParticleSPH* p = particles[i];
+
+        glPushMatrix();
+
+        pos = ADDRESSVOLUME((int) p->pos[0], (int) p->pos[1], (int) p->pos[2]);
+        //
+        //        if (glyphs_original[pos]) cs = 1.05f - glyphs_original[pos]->cs;
+        //        else cs = 0.0;
+        cs = 1.0;
+
+        if (pos < totalSize) {
+            glTranslatef(p->pos[0], p->pos[1], p->pos[2]);
+
+
+
+
+            //        if (i <= (nParticles / 2))
+            //            gcgSETVECTOR3(posAVector,velField[pos][0],velField[pos][1],velField[pos][2])
+            //        else
+            //            gcgSETVECTOR3(posAVector,-1 * velField[pos][0],-1 * velField[pos][1],-1 * velField[pos][2]);
+
+            //VERIFICAR!!!
+            gcgSCALEVECTOR3(posAVector, velField[pos], p->direc);
+            //            gcgSCALEVECTOR3(posAVector, velField[pos], 1.0);
+            //           gcgSETVECTOR3(posAVector,p->vel[0],p->vel[1],p->vel[2])
+            //           gcgSCALEVECTOR3(posAVector,posAVector,-1.0);
+            if (original) gcgHeatColor(glyphs_original[pos]->cl, p->color);
+            //           if(original) { if(glyphs_original[pos]->otm)  glColor3f(1.0,1.0,1.0); else glColor3f(0.0,0.0,0.0);  }
+
+
+
+            //                         glColor4f(color[0],color[1],color[2], glyphs_original[pos]->cp - 0.1);
+
+                glColor3f(p->color[0], p->color[1], p->color[2]);
+
+
+            //              if (FEQUAL(glyphs_original[pos]->tnumber,((fl)/((float) totalSize))))         glColor4f(p->color[0], p->color[1], p->color[2],1.0);
+            //              else         glColor4f(p->color[0], p->color[1], p->color[2],0.0);
+            //           glColor4f(glyphs_original[pos]->cl, glyphs_original[pos]->cp, glyphs_original[pos]->cs, 1.0);
+//            gcgDrawVectorPyramid(0.0, 0.0, 0.0, posAVector, 1.0f);
+
+    glTranslatef(posAVector[0],posAVector[1],posAVector[2]);
+    glRotatef(gAngle,1.,1.,1.);
+    gluCylinder(IDquadric,10.0f,10.0f,10.0f,32,32);
+
+        }
+
+        glPopMatrix();
+    }
+
+}
+
+void glui_callback(int control_id) {
+    //  Notify that this is a GLUI Callback
+    printf("GLUI: ");
+    //  Behave based on control ID
+    switch (control_id) { //  Color Listbox item changed
+        case CHANGEFIELD:
+            printf("Color List box item changed: ");
+
+            switch (listbox_field_id) {
+                case 0:
+                    printf("TWIST \n");
+                    break;
+                case 1:
+                    printf("BRAIN \n");
+                    break;
+                case 2:
+                    printf("CUBE \n");
+                    break;
+            }
+            printf("Item %d selected.\n", listbox_field_id);
+            break;
+    }
+
+}
+
+void cleanupQuadric(void)          // Properly Kill The Window
+{
+  gluDeleteQuadric(IDquadric);
+  printf( "cleanupQuadric completed\n" );
+}
+
+void desenhaTudo() {
+    //    gcgENABLE_LIGHTING(false);
+    if (clearGl)
+        glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+
+    frustum.exportOpenGL();
+
+    // Desenha eixos
+    glDisable(GL_TEXTURE_2D);
+    glBegin(GL_LINES);
+    glColor3f(0.0f, 1.0f, 0.0f);
+    glVertex3f(0.0f, 0.0f, 0.0f);
+    glVertex3f(0.0f, 10.0f, 0.0f);
+    glColor3f(1.0f, 0.0f, 0.0f);
+    glVertex3f(0.0f, 0.0f, 0.0f);
+    glVertex3f(10.0f, 0.0f, 0.0f);
+    glColor3f(0.0f, 0.0f, 1.0f);
+    glVertex3f(0.0f, 0.0f, 0.0f);
+    glVertex3f(0.0f, 0.0f, 10.0f);
+    glEnd();
+
+    //setting up the light
+    VECTOR4 diffuse; //color
+    VECTOR4 specular; //bright
+    VECTOR4 ambient;
+    VECTOR4 emission;
+    int materialSpecularity = 40;
+    VECTOR4 specularity;
+    VECTOR4 pos;
+
+    gcgSETVECTOR4(diffuse, 1.0, 1.0, 1.0, 1.0);
+    gcgSETVECTOR4(specular, 0.24725, 0.1995, 0.0745, 1.0);
+    gcgSETVECTOR4(specularity, 0.628281, 0.655802, 0.366065, 1.0);
+    gcgSETVECTOR4(ambient, 0.0, 0.0, 0.0, 1.0);
+    gcgSETVECTOR4(pos, frustum.x, frustum.y, frustum.z, 1.0);
+    gcgSETVECTOR4(emission, 0.1f, 0.1f, 0.1f, 1.0f);
+
+    if (!drawMesh) {
+        glShadeModel(GL_SMOOTH);
+        glEnable(GL_COLOR_MATERIAL);
+        glEnable(GL_LIGHTING);
+        glMaterialfv(GL_FRONT, GL_SPECULAR, specularity);
+        glMateriali(GL_FRONT, GL_SHININESS, materialSpecularity);
+        glMaterialfv(GL_FRONT, GL_EMISSION, emission);
+        glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
+        glLightfv(GL_LIGHT0, GL_SPECULAR, specular);
+        glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
+        glLightModelfv(GL_LIGHT_MODEL_AMBIENT, ambient);
+        glLightfv(GL_LIGHT0, GL_POSITION, pos);
+        glEnable(GL_LIGHT0);
+    } else glDisable(GL_LIGHTING);
+
+
+
+    //setting up alpha
+    glEnable(GL_BLEND); // Turn Blending On
+    //  glDisable(GL_DEPTH_TEST);	// Turn Depth Testing Off
+
+
+
+
+    glPushMatrix();
+    glTranslatef(-fwidth / 2, -fheight / 2, -fdepth / 2);
+
+
+ IDquadric=gluNewQuadric();      // Create A Pointer To The Quadric Object ( NEW )
+  gluQuadricNormals(IDquadric, GLU_SMOOTH);  // Create Smooth Normals ( NEW )
+  gluQuadricTexture(IDquadric, GL_TRUE);    // Create Texture Coords ( NEW )
+  atexit(cleanupQuadric);
+
+    if (drawPart) drawParticlesPiramid(geometry->particles);
+    int i = 0;
+    //if (drawTens){
+    //    while ((glyphs_original[i]->cl < 0.7) && (i < totalSize)) i++;
+    //       drawTenrsorline(glyphs_original[i]->pos);
+    //}
+    if (drawTens) {
+        while ((i < totalSize)) {
+            i++;
+            drawTensorline2(glyphs_original[i]->pos);
+        }
+    }
+
+
+    //    glColor3f(1.0,1.0,0.0);
+    //       glTranslatef(frustum.x,frustum.y, frustum.z);
+    //        //      if (glyphs_original[pos]) glyphs_original[pos]->draw();
+    //        glutSolidSphere(1.0, 10, 10);
+
+
+    static GLUquadric *quadric = NULL;
+    VECTOR3 color;
+    // Reutilize a OpengGL list to speed up drawing
+    if (quadric == NULL) quadric = gluNewQuadric();
+
+    MATRIX4 orientation;
+    if (drawTensor)
+        for (int i = 0; i < noriginals; i++) {
+            if ((velField[i][1]) && (glyphs_original[i]->cs < 0.7)) {
+
+
+
+                gcgHeatColor(glyphs_original[i]->weight, color);
+                //glColor4f(color[0],color[1],color[2], 1.0f);
+                glColor4f(color[0], color[1], color[2], (0.5f - glyphs_original[i]->cs));
+                glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+
+                //                        glColor4f(1.0,1.0,1.0, 1.0f);
+                //                        VECTOR3 posAVector = {glyphs_original[i]->eigenVectors[0],glyphs_original[i]->eigenVectors[1],glyphs_original[i]->eigenVectors[2]};
+                //                        gcgDrawVectorPyramid(glyphs_original[i]->pos[0],glyphs_original[i]->pos[1],glyphs_original[i]->pos[2], posAVector, 1.0f);
+
+
+            }
+
+        }
+
+
+
+
+    glPopMatrix();
+
+    texto.textPosition(0, 0);
+    glDisable(GL_LIGHTING);
+    glColor3f(1.f, 1.f, 1.f);
+    texto.gcgprintf("GCG Particle Tracing for Tensor Visualization");
+    clock_t tempo = clock();
+    texto.gcgprintf("\nQps: %5.2f", CalculaQuadrosSegundo(((tempo - tempoant) * 1000) / CLOCKS_PER_SEC));
+    if (translationMode) texto.gcgprintf("\nTranslation Mode(T) ON");
+    else texto.gcgprintf("\nTranslation Mode(T) OFF");
+    tempoant = tempo;
+
+    //Executa os comandos OpenGL e troca os buffers
+    glutSwapBuffers();
+
+}
+
+void createTensorGlyphs(gcgTENSORGLYPH** glyphs, int *nglyphs, MATRIX3* tensorField, float* confidence, unsigned int width, unsigned int height, unsigned int depth, float *bigger) {
+
+
+    float cs = 0.0;
+    //creating the tensor glyphs and finding the bigger the smaller weights
+    float smaller = HUGE_VAL;
+    for (unsigned int i = 0; i < width; i++)
+        for (unsigned int j = 0; j < height; j++)
+            for (unsigned int k = 0; k < depth; k++) {
+                VECTOR3 v = {fwidth * (float) i / (width - 1), fheight * (float) j / (height - 1), fdepth * (float) k / (depth - 1)};
+
+                //properties of the tensor matrix
+                MATRIX3 eigenVectors;
+                VECTOR3 eigenValues;
+                gcgEigenSymmetricMatrix3(tensorField[ADDRESSVOLUME((i), (j), (k))], eigenVectors, eigenValues);
+
+                int addressG, addressV;
+                addressG = ADDRESSGLYPHS(i, j, k);
+                addressV = ADDRESSVOLUME(i, j, k);
+
+
+                glyphs[addressG] = new gcgTENSORGLYPH(tensorField[addressV], v, confidence[addressV]);
+                if (glyphs[addressG]->weight > (*bigger)) (*bigger) = glyphs[addressG]->weight;
+                if (glyphs[addressG]->weight < smaller) smaller = glyphs[addressG]->weight;
+                (*nglyphs)++;
+
+                //            if( glyphs[addressG]->cs > THRESHOLD) glyphs[addressG] = NULL;
+
+
+            }
+
+    printf("weights: raiz(lambda1^2 + lambda2^2 + lambda3^2)\nmaior: %f menor: %f\n", (*bigger), smaller);
+
+    int addressH;
+
+    //adjusting weights
+    float diff = (*bigger) - smaller;
+    for (unsigned int i = 0; i < width; i++)
+        for (unsigned int j = 0; j < height; j++)
+            for (unsigned int k = 0; k < depth; k++) {
+                addressH = ADDRESSGLYPHS(i, j, k);
+                if (glyphs[addressH] != NULL) {
+                    glyphs[addressH]->weight = 1 - (glyphs[addressH]->weight - smaller) / diff;
+                }
+            }
+    printf("amount of tensor: %d\n", (*nglyphs));
+}
+
+inline void endian_swap(unsigned int *x) {
+    *x = (*x >> 24) |
+            ((*x << 8) & 0x00FF0000) |
+            ((*x >> 8) & 0x0000FF00) |
+            (*x << 24);
+}
+
+int createTensorline(VECTOR3* vField, gcgTENSORGLYPH** glyphs, int *nglyphs, unsigned int width, unsigned int height, unsigned int depth, int seedI, int seedJ, int seedK, float bigger, int i /* = 0 */) {
+
+    VECTOR3 vIn, vOut, vProp, v1, vAux, nextPos, mainDirection = {1.0, 0.0, 0.0};
+    MATRIX2 scaleD;
+    int adressG, posX, posY, posZ;
+    float wPunct = 0.9;
+    adressG = ADDRESSGLYPHS(seedI, seedJ, seedK);
+
+    if (FEQUAL(glyphs[adressG]->tnumber, 0.0)) {
+
+        gcgSETVECTOR3(vIn, 0.0, 0.0, 0.0);
+        gcgSCALEMATRIX3(scaleD, glyphs[adressG]->tensor, (2.0f / bigger));
+//        gcgAPPLYMATRIX3VECTOR3(vOut, glyphs[adressG]->tensor, vIn);
+         gcgAPPLYMATRIX3VECTOR3(vOut, scaleD,vIn);
+
+
+        gcgSETVECTOR3(v1, glyphs[adressG]->eigenVectors[0], glyphs[adressG]->eigenVectors[1], glyphs[adressG]->eigenVectors[2])
+
+        if (gcgDOTVECTOR3(mainDirection, v1) < 0)gcgSCALEVECTOR3(v1, v1, -1.0);
+        gcgSCALEVECTOR3(v1, v1, glyphs[adressG]->cl);
+        gcgSCALEVECTOR3(vIn, vIn, 1.0 - wPunct);
+        gcgSCALEVECTOR3(vOut, vOut, wPunct);
+        gcgADDVECTOR3(vAux, vIn, vOut);
+        gcgSCALEVECTOR3(vAux, vAux, 1.0 - glyphs[adressG]->cl);
+        gcgADDVECTOR3(vProp, vAux, v1);
+
+
+        if (gcgLENGTHVECTOR3(vField[adressG]) < gcgLENGTHVECTOR3(vProp))
+            gcgCOPYVECTOR3(vField[adressG], vProp);
+
+        //printf("%f %f %f | %f %f %f | %f %f %f | %f\n",vProp[0],vProp[1],vProp[2],v1[0],v1[1],v1[2],glyphs[adressG]->eigenVectors[0], glyphs[adressG]->eigenVectors[1],glyphs[adressG]->eigenVectors[2],glyphs[adressG]->cl );
+
+        //assumindo dt = 1
+        gcgADDVECTOR3(nextPos, glyphs[adressG]->pos, vProp);
+
+
+        posX = ((unsigned int) nextPos[0] * (width - 1)) / (unsigned int) fwidth;
+        posY = ((unsigned int) nextPos[1] * (height - 1)) / (unsigned int) fheight;
+        posZ = ((unsigned int) nextPos[2] * (depth - 1)) / (unsigned int) fdepth;
+
+
+        int aux = 1;
+        while ((posX < (unsigned int) fwidth) && (posY < (unsigned int) fheight) && (posZ < (unsigned int) fdepth) && (posX > 0) && (posY > 0) && (posZ > 0) && (adressG < *nglyphs) && (adressG != ADDRESSGLYPHS(posX, posY, posZ))) {
+
+            if (gcgDOTVECTOR3(vIn, v1) < 0) gcgSCALEVECTOR3(v1, v1, -1);
+            adressG = ADDRESSGLYPHS(posX, posY, posZ);
+            gcgCOPYVECTOR3(vIn, vProp);
+
+            gcgAPPLYMATRIX3VECTOR3(vOut, glyphs[adressG]->tensor, vIn);
+
+            if ((glyphs[adressG]->eigenValues[0] > glyphs[adressG]->eigenValues[1]) && (glyphs[adressG]->eigenValues[0] > glyphs[adressG]->eigenValues[2]))
+                gcgSETVECTOR3(v1, glyphs[adressG]->eigenVectors[0], glyphs[adressG]->eigenVectors[1], glyphs[adressG]->eigenVectors[2])
+            else if ((glyphs[adressG]->eigenValues[1] > glyphs[adressG]->eigenValues[0]) && (glyphs[adressG]->eigenValues[1] > glyphs[adressG]->eigenValues[2]))
+                gcgSETVECTOR3(v1, glyphs[adressG]->eigenVectors[3], glyphs[adressG]->eigenVectors[4], glyphs[adressG]->eigenVectors[5])
+            else if ((glyphs[adressG]->eigenValues[2] > glyphs[adressG]->eigenValues[0]) && (glyphs[adressG]->eigenValues[2] > glyphs[adressG]->eigenValues[1]))
+                gcgSETVECTOR3(v1, glyphs[adressG]->eigenVectors[6], glyphs[adressG]->eigenVectors[7], glyphs[adressG]->eigenVectors[8]);
+
+            gcgSCALEVECTOR3(v1, v1, glyphs[adressG]->cl);
+            gcgSCALEVECTOR3(vIn, vIn, 1.0 - wPunct);
+            gcgSCALEVECTOR3(vOut, vOut, wPunct);
+            gcgADDVECTOR3(vAux, vIn, vOut);
+            gcgSCALEVECTOR3(vAux, vAux, 1.0 - glyphs[adressG]->cl);
+            gcgADDVECTOR3(vProp, vAux, v1);
+
+
+            if (gcgLENGTHVECTOR3(vField[adressG]) < gcgLENGTHVECTOR3(vProp))
+                gcgCOPYVECTOR3(vField[adressG], vProp);
+
+            //assumindo dt = 1
+            gcgADDVECTOR3(nextPos, glyphs[adressG]->pos, vProp);
+
+             glyphs[adressG]->tnumber = (((float)i)/( (float) totalSize));
+            //            cout << glyphs[adressG]->tnumber << endl;
+
+            posX = ((unsigned int) nextPos[0] * (width - 1)) / (unsigned int) fwidth;
+            posY = ((unsigned int) nextPos[1] * (height - 1)) / (unsigned int) fheight;
+            posZ = ((unsigned int) nextPos[2] * (depth - 1)) / (unsigned int) fdepth;
+
+            aux++;
+
+            //    printf("%f ",posX);
+            //    printf("%f ",posY);
+            //    printf("%f ",posZ);
+            //    printf("%f |",vProp[0]);
+            //    printf("%f |",vProp[1]);
+            //     printf("%f \n",vProp[2]);
+
+        }
+
+        //Detectando extremos
+        if (adressG == ADDRESSGLYPHS(posX, posY, posZ))
+            glyphs[adressG]->otm = true;
+        return aux;
+    }
+
+    return 0;
+}
+
+int createTensorlineDirec(VECTOR3* vField, gcgTENSORGLYPH** glyphs, int *nglyphs, unsigned int width, unsigned int height, unsigned int depth, int seedI, int seedJ, int seedK, float bigger) {
+
+    VECTOR3 vIn, vOut, vProp, v1, vAux, nextPos, mainDirection, pPos, pNeg = {1.0, 0.0, 0.0};
+    MATRIX2 scaleD;
+    int adressG, posX, posY, posZ, adressP, adressN;
+    float wPunct = 0.9;
+    adressG = ADDRESSGLYPHS(seedI, seedJ, seedK);
+
+    if (FEQUAL(glyphs[adressG]->cl, 0.0)) return 0;
+    //gcgSETVECTOR3(vIn, glyphs[adressG]->eigenVectors[0], glyphs[adressG]->eigenVectors[1],glyphs[adressG]->eigenVectors[2] );
+    gcgSETVECTOR3(vIn, 0.0, 0.0, 0.0);
+    gcgSCALEMATRIX3(scaleD, glyphs[adressG]->tensor, (2.0f / bigger));
+    gcgAPPLYMATRIX3VECTOR3(vOut, glyphs[adressG]->tensor, vIn);
+
+
+    gcgSETVECTOR3(v1, glyphs[adressG]->eigenVectors[0], glyphs[adressG]->eigenVectors[1], glyphs[adressG]->eigenVectors[2])
+
+    //    if (gcgDOTVECTOR3(mainDirection, v1) < 0)gcgSCALEVECTOR3(v1, v1, -1.0);
+    gcgSCALEVECTOR3(v1, v1, glyphs[adressG]->cl);
+    gcgSCALEVECTOR3(vIn, vIn, 1.0 - wPunct);
+    gcgSCALEVECTOR3(vOut, vOut, wPunct);
+    gcgADDVECTOR3(vAux, vIn, vOut);
+    gcgSCALEVECTOR3(vAux, vAux, 1.0 - glyphs[adressG]->cl);
+    gcgADDVECTOR3(vProp, vAux, v1);
+
+
+    if (gcgLENGTHVECTOR3(vField[adressG]) < gcgLENGTHVECTOR3(vProp))
+        gcgCOPYVECTOR3(vField[adressG], vProp);
+
+    //printf("%f %f %f | %f %f %f | %f %f %f | %f\n",vProp[0],vProp[1],vProp[2],v1[0],v1[1],v1[2],glyphs[adressG]->eigenVectors[0], glyphs[adressG]->eigenVectors[1],glyphs[adressG]->eigenVectors[2],glyphs[adressG]->cl );
+
+    //assumindo dt = 1
+    gcgADDVECTOR3(nextPos, glyphs[adressG]->pos, vProp);
+
+
+    posX = ((unsigned int) nextPos[0] * (width - 1)) / (unsigned int) fwidth;
+    posY = ((unsigned int) nextPos[1] * (height - 1)) / (unsigned int) fheight;
+    posZ = ((unsigned int) nextPos[2] * (depth - 1)) / (unsigned int) fdepth;
+
+
+    int aux = 1;
+    while ((posX < (unsigned int) fwidth) && (posY < (unsigned int) fheight) && (posZ < (unsigned int) fdepth) && (posX > 0) && (posY > 0) && (posZ > 0) && (adressG < *nglyphs) && (adressG != ADDRESSGLYPHS(posX, posY, posZ))) {
+
+        if (gcgDOTVECTOR3(vIn, v1) < 0) gcgSCALEVECTOR3(v1, v1, -1);
+        adressG = ADDRESSGLYPHS(posX, posY, posZ);
+        gcgCOPYVECTOR3(vIn, vProp);
+
+        gcgAPPLYMATRIX3VECTOR3(vOut, glyphs[adressG]->tensor, vIn);
+
+        if ((glyphs[adressG]->eigenValues[0] > glyphs[adressG]->eigenValues[1]) && (glyphs[adressG]->eigenValues[0] > glyphs[adressG]->eigenValues[2]))
+            gcgSETVECTOR3(v1, glyphs[adressG]->eigenVectors[0], glyphs[adressG]->eigenVectors[1], glyphs[adressG]->eigenVectors[2])
+        else if ((glyphs[adressG]->eigenValues[1] > glyphs[adressG]->eigenValues[0]) && (glyphs[adressG]->eigenValues[1] > glyphs[adressG]->eigenValues[2]))
+            gcgSETVECTOR3(v1, glyphs[adressG]->eigenVectors[3], glyphs[adressG]->eigenVectors[4], glyphs[adressG]->eigenVectors[5])
+        else if ((glyphs[adressG]->eigenValues[2] > glyphs[adressG]->eigenValues[0]) && (glyphs[adressG]->eigenValues[2] > glyphs[adressG]->eigenValues[1]))
+            gcgSETVECTOR3(v1, glyphs[adressG]->eigenVectors[6], glyphs[adressG]->eigenVectors[7], glyphs[adressG]->eigenVectors[8]);
+
+        gcgSCALEVECTOR3(v1, v1, glyphs[adressG]->cl);
+        gcgSCALEVECTOR3(vIn, vIn, 1.0 - wPunct);
+        gcgSCALEVECTOR3(vOut, vOut, wPunct);
+        gcgADDVECTOR3(vAux, vIn, vOut);
+        gcgSCALEVECTOR3(vAux, vAux, 1.0 - glyphs[adressG]->cl);
+        gcgADDVECTOR3(vProp, vAux, v1);
+
+
+        if (gcgLENGTHVECTOR3(vField[adressG]) < gcgLENGTHVECTOR3(vProp))
+            gcgCOPYVECTOR3(vField[adressG], vProp);
+
+        //assumindo dt = 1
+        gcgADDVECTOR3(pPos, glyphs[adressG]->pos, vProp);
+        gcgSCALEVECTOR3(pNeg, vProp, -1.0);
+        gcgADDVECTOR3(pNeg, glyphs[adressG]->pos, pNeg);
+        adressP = ADDRESSGLYPHS((int) pPos[0], (int) pPos[1], (int) pPos[2]);
+        adressN = ADDRESSGLYPHS((int) pNeg[0], (int) pNeg[1], (int) pNeg[2]);
+
+        if ((adressP < totalSize) && (adressP >= 0) && (adressN < totalSize) && (adressN >= 0))
+            if (glyphs[adressP]->eigenVectors[0] > glyphs[adressN]->eigenVectors[0]) {
+                gcgCOPYVECTOR3(nextPos, pPos);
+                cout << "entrou " << aux << endl;
+            } else
+                gcgCOPYVECTOR3(nextPos, pNeg);
+
+        //                gcgADDVECTOR3(nextPos, glyphs[adressG]->pos, vProp);
+
+
+
+        posX = ((unsigned int) nextPos[0] * (width - 1)) / (unsigned int) fwidth;
+        posY = ((unsigned int) nextPos[1] * (height - 1)) / (unsigned int) fheight;
+        posZ = ((unsigned int) nextPos[2] * (depth - 1)) / (unsigned int) fdepth;
+
+        aux++;
+
+
+        //    printf("%f ",posX);
+        //    printf("%f ",posY);
+        //    printf("%f ",posZ);
+        //    printf("%f |",vProp[0]);
+        //    printf("%f |",vProp[1]);
+        //     printf("%f \n",vProp[2]);
+        glPushMatrix();
+        glTranslatef(posX, posY, posZ);
+        //      if (glyphs_original[pos]) glyphs_original[pos]->draw();
+        glColor3f(0.3, 1.0, 1.0);
+        glutSolidSphere(0.5, 10, 10);
+        glPopMatrix();
+
+
+    }
+
+
+    return aux;
+}
+
+void detectOutermost() {
+//
+//    //ADVECTION
+//    int posX, posY, posZ, pos, n;
+//    float r;
+//    VECTOR3 scaleVel;
+//    VECTOR3 mainDirect = {0.0, 0.0, 0.0};
+//    bool cont = true;
+//    int i = 0;
+//    while ((FEQUAL(glyphs_original[i]->tnumber,0.0)) && (i < totalSize))
+//
+//
+//        for (int i = 0; i < nParticles - 1; i++) {
+//            gcgParticleSPH* p = geometry->particles[i];
+//
+//            r = fabs(gcgRandom.random());
+//            while ((r > 1.0 || r < 0.0))
+//                r = fabs(gcgRandom.random());
+//            n = (int) ((float) ordSize * r);
+//
+//            posX = ((unsigned int) p->pos[0] * (fwidth - 1)) / (unsigned int) fwidth;
+//            posY = ((unsigned int) p->pos[1] * (fheight - 1)) / (unsigned int) fheight;
+//            posZ = ((unsigned int) p->pos[2] * (fdepth - 1)) / (unsigned int) fdepth;
+//            pos = ADDRESSVOLUME(posX, posY, posZ);
+//
+//
+//            if ((glyphs_original[pos]->cs < 0.8) && (gcgDOTVECTOR3(velField[pos], p->pos) >= 0)) {
+//
+//                pos = ADDRESSVOLUME(posX, posY, posZ);
+//
+//                if ((posX - 1 >= 0) && (posX + 1 < ((int) fwidth)) && (ADDRESSVOLUME(posX + 1, posY, posZ) < totalSize) && (ADDRESSVOLUME(posX - 1, posY, posZ) > 0))
+//                    if (glyphs_original[(ADDRESSVOLUME(posX + 1, posY, posZ))]->cp > glyphs_original[(ADDRESSVOLUME(posX - 1, posY, posZ))]->cp)
+//                        mainDirect[0] = 1.0;
+//                    else
+//                        mainDirect[0] = -1.0;
+//
+//                if ((posY - 1 >= 0) && (posY + 1 < ((int) fheight)) && (ADDRESSVOLUME(posX, posY + 1, posZ) < totalSize) && (ADDRESSVOLUME(posX, posY - 1, posZ) > 0))
+//                    if (glyphs_original[(ADDRESSVOLUME(posX, posY + 1, posZ))]->cp > glyphs_original[(ADDRESSVOLUME(posX, posY - 1, posZ))]->cp)
+//                        mainDirect[1] = 1.0;
+//                    else
+//                        mainDirect[1] = -1.0;
+//
+//                if ((posZ - 1 >= 0) && (posZ + 1 < ((int) fdepth)) && (ADDRESSVOLUME(posX, posY, posZ + 1) < totalSize) && (ADDRESSVOLUME(posX, posY, posZ - 1) > 0))
+//                    if (glyphs_original[(ADDRESSVOLUME(posX, posY, posZ + 1))]->cp > glyphs_original[(ADDRESSVOLUME(posX, posY, posZ - 1))]->cp)
+//                        mainDirect[2] = 1.0;
+//                    else
+//                        mainDirect[2] = -1.0;
+//
+//
+//
+//                if (gcgDOTVECTOR3(velField[pos], mainDirect) >= 0)
+//                    if (p->direc != 1.0) {
+//                        p->pos[0] = tensor_ord[n]->pos[0];
+//                        p->pos[1] = tensor_ord[n]->pos[1];
+//                        p->pos[2] = tensor_ord[n]->pos[2];
+//                        p->direc = 1.0;
+//                        gcgSETVECTOR3(p->color, 1.0, 0.0, 0.0);
+//
+//                    } else {
+//
+//
+//                        gcgSCALEVECTOR3(scaleVel, velField[pos], (p->direc * 0.2f)) //dt = 0.5;
+//                        gcgADDVECTOR3(p->pos, p->pos, scaleVel);
+//
+//                        geometry->particles[i] = p;
+//
+//                        gcgCOPYVECTOR3(geometry->particles[i]->vel, scaleVel);
+//
+//                    }
+//                else
+//                    if (p->direc != -1.0) {
+//                    p->pos[0] = tensor_ord[n]->pos[0];
+//                    p->pos[1] = tensor_ord[n]->pos[1];
+//                    p->pos[2] = tensor_ord[n]->pos[2];
+//                    p->direc = -1.0;
+//                    gcgSETVECTOR3(p->color, 1.0, 0.0, 0.0);
+//
+//                } else {
+//
+//
+//                    gcgSCALEVECTOR3(scaleVel, velField[pos], (p->direc * 0.2f)) //dt = 0.5;
+//                    gcgADDVECTOR3(p->pos, p->pos, scaleVel);
+//
+//                    geometry->particles[i] = p;
+//                    gcgCOPYVECTOR3(geometry->particles[i]->vel, scaleVel);
+//                };
+//
+//
+//                //Condições de contorno
+//                if (((int) p->pos[0] >= fwidth) || ((int) p->pos[1] >= fheight) || ((int) p->pos[2] >= fdepth) ||
+//                    (p->pos[0] < 0.0) || (p->pos[1] < 0.0) || (p->pos[2] < 0.0)) {
+//
+//                    p->pos[0] = tensor_ord[n]->pos[0];
+//                    p->pos[1] = tensor_ord[n]->pos[1];
+//                    p->pos[2] = tensor_ord[n]->pos[2];
+//
+//                    posX = (int) p->pos[0];
+//                    posY = (int) p->pos[1];
+//                    posZ = (int) p->pos[2];
+//
+//                }
+//            } else {
+//
+//                p->pos[0] = tensor_ord[n]->pos[0];
+//                p->pos[1] = tensor_ord[n]->pos[1];
+//                p->pos[2] = tensor_ord[n]->pos[2];
+//
+//            }
+//        }
+//
+//
+//
+//    }
+
+}
+
+int main(int argv, char** argc) {
+    geometry = new gcgOptimizedGridSPH();
+
+    //inicio da etapa de codificação
+    glyphs_original = (gcgTENSORGLYPH**) malloc(sizeof (gcgTENSORGLYPH*) * (int) (fwidth) * (fheight) * (fdepth));
+    velField = (VECTOR3*) malloc(sizeof (VECTOR3) * (int) (fwidth) * (fheight) * (fdepth));
+    tensor_ord = (gcgTENSORGLYPH**) malloc(sizeof (gcgTENSORGLYPH*) * (totalSize + 1));
+
+    VECTOR3 pos, posP, posN;
+
+    geometry->init((int) fwidth, (int) fheight, (int) fdepth, nParticles, smoothWidth, influenceRadius, 1);
+
+    //Rotinas para adicionar particulas
+
+    //   for(unsigned int i = 1; i < fwidth; i++)
+    //    for(unsigned int j = 1; j < fheight; j++)
+    //      for(unsigned int k = 1; k < fdepth - 1; k++){
+    //        if (i*j*k <= nParticles){
+    //         pos[0] = (float) i+10.5f;
+    //         pos[1] = (float) j+5.5f;
+    //         pos[2] = (float) k+0.0f;
+    //        geometry->addParticle(new gcgParticleSPH(mass, 0.5f, initialDensity, pos));
+    //        }
+    //      }
+
+
+
+
+
+    MATRIX3 *field;
+    float* confidence; //it is 1.0 in regions where the tensors are meaningful and useful, and 0.0 where the tensors are noise (such as air)
+    FILE* file;
+
+    //Creating the tensor grid
+    gcgTENSORGRID *grid_entrada = new gcgTENSORGRID();
+    grid_entrada->createGrid(fwidth, fheight, fdepth);
+
+    //Opening the input dt-mri file and creating space for the tensor field
+    field = (MATRIX3*) malloc(sizeof (MATRIX3) * fwidth * fheight * fdepth);
+    confidence = (float*) malloc(sizeof (float) * fwidth * fheight * fdepth);
+    if (!(file = fopen(INPUT, "rb+"))) puts("Erro ao importar campo tensorial!");
+    //  if(!(file = fopen("gk2-rcc-mask.raw", "rb+"))) puts("Erro ao importar campo tensorial!");
+
+    int tamanho = fwidth * fheight * fdepth;
+
+    fscanf(file, "%d %d %d\n\n", &fwidth, &fheight, &fdepth);
+    //stores the tensor field
+    for (int i = 0; i < tamanho; ++i) {
+        fscanf(file, "%f %f %f\n%f %f %f\n%f %f %f\n", &field[i][0], &field[i][1], &field[i][2], &field[i][3], &field[i][4], &field[i][5], &field[i][6], &field[i][7], &field[i][8]);
+        if (feof(file)) break;
+    }
+    fclose(file);
+
+
+
+
+    //    stores the tensor field
+    //    for (int i = 0; i < tamanho; ++i) {
+    //        fread(&confidence[i], sizeof (float), 1, file);
+    //        fread(&field[i][0], sizeof (float) + sizeof (float) + sizeof (float), 1, file);
+    //        fread(&field[i][4], sizeof (float) + sizeof (float), 1, file);
+    //        fread(&field[i][8], sizeof (float), 1, file);
+    //        field[i][3] = field[i][1];
+    //        field[i][6] = field[i][2];
+    //        field[i][7] = field[i][5];
+    //
+    //        unsigned int *dummy = (unsigned int*) &confidence[i];
+    //        endian_swap(&dummy[0]);
+    //        // printf("%f \n",confidence[i]);
+    //
+    //        dummy = (unsigned int*) &field[i][0];
+    //
+    //        endian_swap(&dummy[0]);
+    //        endian_swap(&dummy[1]);
+    //        endian_swap(&dummy[2]);
+    //        endian_swap(&dummy[3]);
+    //        endian_swap(&dummy[4]);
+    //        endian_swap(&dummy[5]);
+    //        endian_swap(&dummy[6]);
+    //        endian_swap(&dummy[7]);
+    //        endian_swap(&dummy[8]);
+    //
+    //    }
+    //    fclose(file);
+
+    //  formatting the input volume into a tensor grid
+    for (unsigned int z = 0; z < fdepth; z++)
+        for (unsigned int y = 0; y < fheight; y++)
+            for (unsigned int x = 0; x < fwidth; x++) {
+                gcgCOPYMATRIX3(grid_entrada->data[z * fwidth * fheight + y * fwidth + x], field[z * fwidth * fheight + y * fwidth + x]);
+            }
+
+
+    //  gcgGCGTENSORGENERATE* generate = new gcgGCGTENSORGENERATE(fwidth,fheight, fdepth);
+    //
+    //   for(int i = 0; i < tamanho; ++i){
+    //         gcgCOPYMATRIX3(field[i],generate->grid->data[i]);
+    //   }
+    //
+
+    //   for (unsigned int z = 0; z < fdepth; z++)
+    //     for (unsigned int y = 0; y < fheight; y++)
+    //        for (unsigned int x = 0; x < fwidth; x++){
+    //
+    //            gcgCOPYMATRIX3( grid_entrada->data[z* fwidth * fheight + y*fwidth+ x],generate->grid->data[z* fwidth * fheight + y*fwidth+ x] );
+    //
+    //
+    //    }
+
+
+    //creating glyphs from the tensor field
+    float bigger = -1;
+    createTensorGlyphs(glyphs_original, &noriginals, field, confidence, fwidth, fheight, fdepth, &bigger);
+
+
+    for (unsigned int z = 0; z < fdepth; z++)
+        for (unsigned int y = 0; y < fheight; y++)
+            for (unsigned int x = 0; x < fwidth; x++) {
+                createTensorline(velField, glyphs_original, &noriginals, fwidth, fheight, fdepth, x, y, z, bigger, ADDRESSVOLUME(x, y, z));
+            }
+
+    //      int addr;
+    //    for (unsigned int z = 0; z < fdepth; z++)
+    //        for (unsigned int y = 0; y < fheight; y++)
+    //            for (unsigned int x = 0; x < fwidth; x++) {
+    //                addr = ADDRESSVOLUME((x), (y), (z));
+    //                 if ( (glyphs_original[addr]->cl > THRESHOLD) || (glyphs_original[addr]->cp > THRESHOLD))
+    //                createTensorline(velField, glyphs_original, &noriginals, fwidth, fheight, fdepth, x, y, z, bigger);
+    //            }
+
+    for (int i = 0; i < totalSize; i++) {
+        if (glyphs_original[i]->eigenValues[0] >= (THRESHOLD)) {
+            tensor_ord[ordSize] = glyphs_original[i];
+            ordSize++;
+            //                            cout << glyphs_original[i]->eigenValues[0] << endl;
+        }
+    }
+
+    cout << "Total ordenados: " << ordSize - 1 << endl;
+
+    //    createHeap(tensor_heap, heapSize - 1, 'p');
+
+    cout << tensor_ord[5]->cl << " " << tensor_ord[6]->cl << " " << tensor_ord[7]->cl << endl;
+    cout << tensor_ord[5]->cp << " " << tensor_ord[6]->cp << " " << tensor_ord[7]->cp << endl;
+    cout << tensor_ord[5]->cs << " " << tensor_ord[6]->cs << " " << tensor_ord[7]->cs << endl;
+    gcgSETVECTOR3(obs, frustum.x, frustum.y, frustum.z);
+    calcDist2Obs(tensor_ord, ordSize);
+    calcK2(tensor_ord, ordSize);
+    calcCurv(tensor_ord, ordSize);
+    quicksort(tensor_ord, 0, ordSize - 1);
+    //    quicksort(tensor_ord, 0, ordSize - 1,obs);
+    //        bubble(tensor_ord, ordSize - 1,obs);
+    cout << "-----------------------------------------------------------------------------" << endl;
+    cout << tensor_ord[5]->cl << " " << tensor_ord[6]->cl << " " << tensor_ord[7]->cl << endl;
+    cout << tensor_ord[5]->cp << " " << tensor_ord[6]->cp << " " << tensor_ord[7]->cp << endl;
+    cout << tensor_ord[5]->cs << " " << tensor_ord[6]->cs << " " << tensor_ord[7]->cs << endl;
+    //    for (int i = 0; i < ordSize - 1; i++) {
+    //        if(tensor_ord[i]->cp > tensor_ord[i+1]->cp )
+    //            cout << "ERRROOOO!! "<< i <<" " << tensor_ord[i]->cl << " " <<   tensor_ord[i+1]->cl<< endl;
+    //
+    //
+    //    }
+
+
+
+    int n;
+    float r;
+    int p, posX, posY, posZ;
+    VECTOR3 mainDirect = {0.0, 0.0, 0.0};
+    for (unsigned int i = 1; i < nParticles; i++) {
+        r = fabs(gcgRandom.random());
+        while (r > 1.0 || r < 0.0) r = fabs(gcgRandom.random());
+        n = (int) ((float) ordSize * r);
+        pos[0] = tensor_ord[n]->pos[0];
+        pos[1] = tensor_ord[n]->pos[1];
+        pos[2] = tensor_ord[n]->pos[2];
+        posX = (int) pos[0];
+        posY = (int) pos[1];
+        posZ = (int) pos[2];
+        p = ADDRESSVOLUME(posX, posY, posZ);
+
+
+        //Restrições de criação
+//        if ((p < totalSize) && (p >= 0) && (tensor_ord[p]->otm == true) && (tensor_ord[p]->cs <= 0.01)) {
+        if ((p < totalSize) && (p >= 0)  && (tensor_ord[p]->cs <= 0.01)) {
+
+            if ((posX - 1 >= 0) && (posX + 1 < ((int) fwidth)) && (ADDRESSVOLUME(posX + 1, posY, posZ) < totalSize) && (ADDRESSVOLUME(posX - 1, posY, posZ) > 0))
+                if (glyphs_original[(ADDRESSVOLUME(posX + 1, posY, posZ))]->cp > glyphs_original[(ADDRESSVOLUME(posX - 1, posY, posZ))]->cp)
+                    mainDirect[0] = 1.0;
+                else
+                    mainDirect[0] = -1.0;
+
+            if ((posY - 1 >= 0) && (posY + 1 < ((int) fheight)) && (ADDRESSVOLUME(posX, posY + 1, posZ) < totalSize) && (ADDRESSVOLUME(posX, posY - 1, posZ) > 0))
+                if (glyphs_original[(ADDRESSVOLUME(posX, posY + 1, posZ))]->cp > glyphs_original[(ADDRESSVOLUME(posX, posY - 1, posZ))]->cp)
+                    mainDirect[1] = 1.0;
+                else
+                    mainDirect[1] = -1.0;
+
+            if ((posZ - 1 >= 0) && (posZ + 1 < ((int) fdepth)) && (ADDRESSVOLUME(posX, posY, posZ + 1) < totalSize) && (ADDRESSVOLUME(posX, posY, posZ - 1) > 0))
+                if (glyphs_original[(ADDRESSVOLUME(posX, posY, posZ + 1))]->cp > glyphs_original[(ADDRESSVOLUME(posX, posY, posZ - 1))]->cp)
+                    mainDirect[2] = 1.0;
+                else
+                    mainDirect[2] = -1.0;
+
+
+
+            if (gcgDOTVECTOR3(velField[p], mainDirect) >= 0)
+                geometry->addParticle(new gcgParticleSPH(mass, 0.15f, initialDensity, pos, 1.0));
+            else
+                geometry->addParticle(new gcgParticleSPH(mass, 0.15f, initialDensity, pos, -1.0));
+
+
+        } else i--;
+        //
+        //
+        //        gcgSCALEVECTOR3(posP, pos, 0.2f); //dt = 0.5;
+        //        gcgSCALEVECTOR3(posN, pos, -0.2f); //dt = 0.5;
+        //        gcgADDVECTOR3(posP, posP, pos);
+        //        gcgADDVECTOR3(posN, posN, pos);
+        //
+        //        pp = ADDRESSVOLUME(((int) posP[0]), ((int) posP[1]), ((int) posP[2]));
+        //        pn = ADDRESSVOLUME(((int) posN[0]), ((int) posN[1]), ((int) posN[2]));
+        //        p = ADDRESSVOLUME(((int) pos[0]), ((int) pos[1]), ((int) pos[2]));
+        //
+        //        //        if ( (pp < totalSize) && (fabs(glyphs_original[p]->cp -glyphs_original[pp]->cp )) > (fabs(glyphs_original[p]->cp -glyphs_original[pn]->cp )) ){
+        //        if ((pp < totalSize) && (glyphs_original[pp]->cp > glyphs_original[pn]->cp))
+        //            geometry->addParticle(new gcgParticleSPH(mass, 0.15f, initialDensity, pos, 1.0));
+        //        else if (pn < totalSize)
+        //            geometry->addParticle(new gcgParticleSPH(mass, 0.15f, initialDensity, pos, -1.0));
+        //        else
+        //            i--;
+        //
+
+
+
+    }
+
+
+
+    //    for (int i = 0; i <= (totalSize/2)-1; i++)
+    //        if ((tensor_heap[i]->cp < tensor_heap[2*i]->cp) || (tensor_heap[i]->cp < tensor_heap[(2*i)+1]->cp))
+    //            printf("ERRO \n");
+    //
+    //    cout << "BIG: " << tensor_heap[0]->cp << " pos: " << tensor_heap[0]->pos[0] << " " << tensor_heap[0]->pos[1] << " " << tensor_heap[0]->pos[2] << endl;
+    //    cout << "BIG: " << tensor_heap[1]->cp << " pos: " << tensor_heap[1]->pos[0] << " " << tensor_heap[1]->pos[1] << " " << tensor_heap[1]->pos[2] << endl;
+    //    cout << "BIG: " << tensor_heap[2]->cp << " pos: " << tensor_heap[2]->pos[0] << " " << tensor_heap[2]->pos[1] << " " << tensor_heap[2]->pos[2] << endl;
+    //createTensorline(velField,glyphs_original,&noriginals,fwidth,fheight,fdepth,10,19,19,bigger);
+
+
+
+    //setting up glut and opengl
+    glutInit(&argv, argc);
+    glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA);
+    glutInitWindowSize(640, 480);
+    glutInitWindowPosition(230, 120);
+    janela = glutCreateWindow("GCG - DCC/UFJF - Visualizador básico");
+    frustum.setPosition(5.0f, 2.f, 5.0f);
+    ConfiguraOpenGL(); //inicializa funções do openGL
+
+    glutReshapeFunc(alteraTamanhoJanela); //chamada cada vez que um tamanho de janela � modificado
+    glutDisplayFunc(desenhaTudo); //chamada sempre que a janela precisar ser redesenhada
+    glutKeyboardFunc(teclado); //chamada cada vez que uma tecla de c�digo ASCII � pressionado
+    glutSpecialFunc(tecladoEspecial); //chamada cada vez que uma tecla de c�digo n�o ASCII � pressionado
+    glutMotionFunc(gerenciaMovimentoMouse);
+    glutMouseFunc(gerenciaMouse);
+    glutIdleFunc(simulacao); //chamada a cada ciclo de glutMainLoop()
+
+
+
+    /****************************************/
+    /*         Here's the GLUI code         */
+    /****************************************/
+    GLUI_Master.set_glutIdleFunc(simulacao);
+
+    //  Create GLUI window
+    glui_window = GLUI_Master.create_glui("Tensor", 0, 30, 120);
+
+    //---------------------------------------------------------------------
+    // 'Object Properties' Panel
+    //---------------------------------------------------------------------
+
+    glui_window->add_statictext("Selecione o campo tensorial: ");
+
+    //  Add the 'Object Properties' Panel to the GLUI window
+    GLUI_Panel *op_panel = glui_window->add_panel("Propriedades do Campo");
+
+
+
+
+
+
+    //  Add the Color listbox to the 'Object Properties' Panel
+    GLUI_Listbox *color_listbox = glui_window->add_listbox_to_panel(op_panel, "Campo: ", &listbox_field_id, CHANGEFIELD, glui_callback);
+
+    //  Add the items to the listbox
+    color_listbox->add_item(0, "TWIST");
+    color_listbox->add_item(1, "BRAIN");
+    color_listbox->add_item(2, "CUBE");
+
+
+    //  Select the White Color by default
+    color_listbox->set_int_val(0);
+
+
+
+    glui_window->add_button("Quit", 0, (GLUI_Update_CB) exit);
+    glui_window->set_main_gfx_window(janela);
+
+
+
+
+    glutMainLoop(); //mant�m GLUT em loop, considerando eventos acima
+
+
+    //let's free the space that was allocated
+    free(field);
+    free(confidence);
+    free(glyphs_original);
+    return 0;
+}
+
+
+
+    //ADVECTION
+    //    int posX, posY, posZ, pos, n, pp, pn;
+    //    float r;
+    //    VECTOR3 scaleVel, posP, posN;
+    int posX, posY, posZ, pos, n;
+    float r, dt;
+    VECTOR3 scaleVel;
+    VECTOR3 mainDirect = {0.0, 0.0, 0.0};
+
+    dt = 0.2f;
+
+
+    for (int i = 0; i < nParticles - 1; i++) {
+        gcgParticleSPH* p = geometry->particles[i];
+
+
+
+        r = fabs(gcgRandom.random());
+        while ((r > 1.0 || r < 0.0))
+            r = fabs(gcgRandom.random());
+        n = (int) ((float) ordSize * r);
+
+        posX = ((unsigned int) p->pos[0] * (fwidth - 1)) / (unsigned int) fwidth;
+        posY = ((unsigned int) p->pos[1] * (fheight - 1)) / (unsigned int) fheight;
+        posZ = ((unsigned int) p->pos[2] * (fdepth - 1)) / (unsigned int) fdepth;
+        pos = ADDRESSVOLUME(posX, posY, posZ);
+
+        //        if ((posX - 1 >= 0) && (posX + 1 < ((int) fwidth)))
+        //            if (glyphs_original[(ADDRESSVOLUME(posX + 1, posY, posZ))]->cp > glyphs_original[(ADDRESSVOLUME(posX - 1, posY, posZ))]->cp)
+        //                mainDirect[0] = 1.0;
+        //            else
+        //                mainDirect[0] = -1.0;
+        //
+        //        if ((posY - 1 >= 0) && (posY + 1 < ((int) fheight)))
+        //            if (glyphs_original[(ADDRESSVOLUME(posX, posY + 1, posZ))]->cp > glyphs_original[(ADDRESSVOLUME(posX, posY - 1, posZ))]->cp)
+        //                mainDirect[1] = 1.0;
+        //            else
+        //                mainDirect[1] = -1.0;
+        //
+        //        if ((posZ - 1 >= 0) && (posZ + 1 < ((int) fdepth)))
+        //            if (glyphs_original[(ADDRESSVOLUME(posX, posY, posZ + 1))]->cp > glyphs_original[(ADDRESSVOLUME(posX, posY, posZ - 1))]->cp)
+        //                mainDirect[2] = 1.0;
+        //            else
+        //                mainDirect[2] = -1.0;
+        //
+        //
+        //
+        //                if (gcgDOTVECTOR3(velField[pos], mainDirect) >= 0)
+        //                      p->direc =  1.0;
+        //                else
+        //                      p->direc = -1.0;
+
+
+        //             p->direc = gcgDOTVECTOR3(velField[pos], mainDirect);
+
+
+
+        if ((glyphs_original[pos]->cs < 0.8) && (gcgDOTVECTOR3(velField[pos], p->pos) >= 0)) {
+            //          if (glyphs_original[pos]->cs < 0.8) {
+            //            if (i <= (nParticles / 2))
+            //                gcgSCALEVECTOR3(scaleVel, velField[pos], 0.2f) //dt = 0.5
+            //            else
+            //                gcgSCALEVECTOR3(scaleVel, velField[pos], -0.2f); //dt = 0.5;
+
+
+            //               gcgSCALEVECTOR3(posP, velField[pos], 0.2f); //dt = 0.5;
+            //               gcgSCALEVECTOR3(posN, velField[pos], -0.2f); //dt = 0.5;
+            //               gcgADDVECTOR3(posP, posP, velField[pos]);
+            //               gcgADDVECTOR3(posN, posN, velField[pos]);
+            //
+            //               pp =  ADDRESSVOLUME(((int) posP[0]),((int) posP[1]),((int) posP[2]) );
+            //               pn =  ADDRESSVOLUME(((int) posN[0]),((int) posN[1]),((int) posN[2]) );
+            ////               p  =  ADDRESSVOLUME(((int) velField[pos][0]) ,((int) velField[pos][1]) ,((int) velField[pos][2])  );
+            //
+            ////        if ( (pp < totalSize) && (fabs(glyphs_original[p]->cp -glyphs_original[pp]->cp )) > (fabs(glyphs_original[p]->cp -glyphs_original[pn]->cp )) ){
+            //          if ( (pp < totalSize) && (pp >= 0) && (glyphs_original[pp]->eigenValues[0]  > glyphs_original[pn]->eigenValues[0] ) )
+            //                p->direc = 1.0;
+            //          else if ( (pn < totalSize) && (pn >= 0))
+            //                  p->direc = -1.0;
+            //          else
+            //             i--;
+
+            pos = ADDRESSVOLUME(posX, posY, posZ);
+
+            if ((posX - 1 >= 0) && (posX + 1 < ((int) fwidth)) && (ADDRESSVOLUME(posX + 1, posY, posZ) < totalSize) && (ADDRESSVOLUME(posX - 1, posY, posZ) > 0))
+                if (glyphs_original[(ADDRESSVOLUME(posX + 1, posY, posZ))]->cp > glyphs_original[(ADDRESSVOLUME(posX - 1, posY, posZ))]->cp)
+                    mainDirect[0] = 1.0;
+                else
+                    mainDirect[0] = -1.0;
+
+            if ((posY - 1 >= 0) && (posY + 1 < ((int) fheight)) && (ADDRESSVOLUME(posX, posY + 1, posZ) < totalSize) && (ADDRESSVOLUME(posX, posY - 1, posZ) > 0))
+                if (glyphs_original[(ADDRESSVOLUME(posX, posY + 1, posZ))]->cp > glyphs_original[(ADDRESSVOLUME(posX, posY - 1, posZ))]->cp)
+                    mainDirect[1] = 1.0;
+                else
+                    mainDirect[1] = -1.0;
+
+            if ((posZ - 1 >= 0) && (posZ + 1 < ((int) fdepth)) && (ADDRESSVOLUME(posX, posY, posZ + 1) < totalSize) && (ADDRESSVOLUME(posX, posY, posZ - 1) > 0))
+                if (glyphs_original[(ADDRESSVOLUME(posX, posY, posZ + 1))]->cp > glyphs_original[(ADDRESSVOLUME(posX, posY, posZ - 1))]->cp)
+                    mainDirect[2] = 1.0;
+                else
+                    mainDirect[2] = -1.0;
+
+
+
+            if (gcgDOTVECTOR3(velField[pos], mainDirect) >= 0)
+                if (p->direc != 1.0) {
+                    p->pos[0] = tensor_ord[n]->pos[0];
+                    p->pos[1] = tensor_ord[n]->pos[1];
+                    p->pos[2] = tensor_ord[n]->pos[2];
+                    p->direc = 1.0;
+                    gcgSETVECTOR3(p->color, 1.0, 0.0, 0.0);
+
+                } else {
+
+
+                    gcgSCALEVECTOR3(scaleVel, velField[pos], (p->direc * dt)) //dt = 0.5;
+                    //              gcgSCALEVECTOR3(scaleVel, velField[pos], ( 0.2f)) //dt = 0.2;
+                    gcgADDVECTOR3(p->pos, p->pos, scaleVel);
+
+
+
+                    geometry->particles[i] = p;
+
+
+                    gcgCOPYVECTOR3(geometry->particles[i]->vel, scaleVel);
+
+                }//                p->direc = 1.0;
+            else
+                if (p->direc != -1.0) {
+                p->pos[0] = tensor_ord[n]->pos[0];
+                p->pos[1] = tensor_ord[n]->pos[1];
+                p->pos[2] = tensor_ord[n]->pos[2];
+                p->direc = -1.0;
+                gcgSETVECTOR3(p->color, 1.0, 0.0, 0.0);
+
+            } else {
+
+
+                gcgSCALEVECTOR3(scaleVel, velField[pos], (p->direc * dt)) //dt = 0.5;
+                //              gcgSCALEVECTOR3(scaleVel, velField[pos], ( 0.2f)) //dt = 0.2;
+                gcgADDVECTOR3(p->pos, p->pos, scaleVel);
+
+                geometry->particles[i] = p;
+                gcgCOPYVECTOR3(geometry->particles[i]->vel, scaleVel);
+            };
+
+
+            //Condições de contorno
+            if (((int) p->pos[0] >= fwidth) || ((int) p->pos[1] >= fheight) || ((int) p->pos[2] >= fdepth) ||
+                (p->pos[0] < 0.0) || (p->pos[1] < 0.0) || (p->pos[2] < 0.0)) {
+
+                p->pos[0] = tensor_ord[n]->pos[0];
+                p->pos[1] = tensor_ord[n]->pos[1];
+                p->pos[2] = tensor_ord[n]->pos[2];
+
+                posX = (int) p->pos[0];
+                posY = (int) p->pos[1];
+                posZ = (int) p->pos[2];
+                //                pos = ADDRESSVOLUME(posX, posY, posZ);
+                //
+                //               if ((posX - 1 >= 0) && (posX + 1 < ((int) fwidth)) && (ADDRESSVOLUME(posX + 1, posY, posZ) < totalSize) && (ADDRESSVOLUME(posX - 1, posY, posZ) > 0))
+                //                if (glyphs_original[(ADDRESSVOLUME(posX + 1, posY, posZ))]->cp > glyphs_original[(ADDRESSVOLUME(posX - 1, posY, posZ))]->cp)
+                //                    mainDirect[0] = 1.0;
+                //                else
+                //                    mainDirect[0] = -1.0;
+                //
+                //            if ((posY - 1 >= 0) && (posY + 1 < ((int) fheight)) && (ADDRESSVOLUME(posX, posY + 1, posZ) < totalSize) && (ADDRESSVOLUME(posX, posY - 1, posZ) > 0))
+                //                if (glyphs_original[(ADDRESSVOLUME(posX, posY + 1, posZ))]->cp > glyphs_original[(ADDRESSVOLUME(posX, posY - 1, posZ))]->cp)
+                //                    mainDirect[1] = 1.0;
+                //                else
+                //                    mainDirect[1] = -1.0;
+                //
+                //            if ((posZ - 1 >= 0) && (posZ + 1 < ((int) fdepth)) && (ADDRESSVOLUME(posX, posY, posZ + 1) < totalSize) && (ADDRESSVOLUME(posX, posY, posZ - 1) > 0))
+                //                if (glyphs_original[(ADDRESSVOLUME(posX, posY, posZ + 1))]->cp > glyphs_original[(ADDRESSVOLUME(posX, posY, posZ - 1))]->cp)
+                //                    mainDirect[2] = 1.0;
+                //                else
+                //                    mainDirect[2] = -1.0;
+                //
+                //
+                //
+                //                if (gcgDOTVECTOR3(velField[pos], mainDirect) >= 0)
+                //                    p->direc = 1.0;
+                //                else
+                //                    p->direc = -1.0;
+
+
+
+            }
+            //                              p->color[0] = 0.0;
+            //            p->color[1] = 0.0;
+            //            p->color[2] = 1.0;
+        } else {
+
+            //           cout << gcgDOTVECTOR3(velField[pos], p->pos) << endl;
+            p->pos[0] = tensor_ord[n]->pos[0];
+            p->pos[1] = tensor_ord[n]->pos[1];
+            p->pos[2] = tensor_ord[n]->pos[2];
+            //            p->color[0] = 1.0;
+            //            p->color[1] = 0.0;
+            //            p->color[2] = 0.0;
+
+            //            posX = (int) p->pos[0];
+            //            posY = (int) p->pos[1];
+            //            posZ = (int) p->pos[2];
+            //                pos = ADDRESSVOLUME(posX, posY, posZ);
+            //
+            //               if ((posX - 1 >= 0) && (posX + 1 < ((int) fwidth)) && (ADDRESSVOLUME(posX + 1, posY, posZ) < totalSize) && (ADDRESSVOLUME(posX - 1, posY, posZ) > 0))
+            //                if (glyphs_original[(ADDRESSVOLUME(posX + 1, posY, posZ))]->cp > glyphs_original[(ADDRESSVOLUME(posX - 1, posY, posZ))]->cp)
+            //                    mainDirect[0] = 1.0;
+            //                else
+            //                    mainDirect[0] = -1.0;
+            //
+            //            if ((posY - 1 >= 0) && (posY + 1 < ((int) fheight)) && (ADDRESSVOLUME(posX, posY + 1, posZ) < totalSize) && (ADDRESSVOLUME(posX, posY - 1, posZ) > 0))
+            //                if (glyphs_original[(ADDRESSVOLUME(posX, posY + 1, posZ))]->cp > glyphs_original[(ADDRESSVOLUME(posX, posY - 1, posZ))]->cp)
+            //                    mainDirect[1] = 1.0;
+            //                else
+            //                    mainDirect[1] = -1.0;
+            //
+            //            if ((posZ - 1 >= 0) && (posZ + 1 < ((int) fdepth)) && (ADDRESSVOLUME(posX, posY, posZ + 1) < totalSize) && (ADDRESSVOLUME(posX, posY, posZ - 1) > 0))
+            //                if (glyphs_original[(ADDRESSVOLUME(posX, posY, posZ + 1))]->cp > glyphs_original[(ADDRESSVOLUME(posX, posY, posZ - 1))]->cp)
+            //                    mainDirect[2] = 1.0;
+            //                else
+            //                    mainDirect[2] = -1.0;
+            //
+            //
+            //
+            //                if (gcgDOTVECTOR3(velField[pos], mainDirect) >= 0)
+            //                    p->direc = 1.0;
+            //                else
+            //                    p->direc = -1.0;
+
+
+        }
+    }

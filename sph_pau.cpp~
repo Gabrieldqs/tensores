@@ -1,0 +1,435 @@
+/* 
+ * File:   gcgSph.cpp
+ * Author: joseluiz
+ * 
+ * Created on July 11, 2012, 2:02 PM
+ */
+
+#include "sph.h"
+
+
+#define TIME_STEP 0.001
+#define TIME_STEP2 (TIME_STEP*TIME_STEP)
+#define radiusScale 1.
+#define VERLET 0
+#define LEAP_FROG 1
+#define ENERGY 1
+#define INTEGRATOR LEAP_FROG
+///Rever o leap nao funcionando
+extern float supportRadius;
+extern float supportRadius3;
+
+
+
+//class RandomQueue{
+//public:
+//    unsigned int count = 0;
+//    VECTOR3 ** points;
+//    RandomQueue(int totalPoints){
+//        count = totalPoints;
+//        points = (VECTOR3**) malloc(count*sizeof(VECTOR3*));
+//        for(int i = 0; i < count; i++){
+//            points[i] = (VECTOR3*) malloc(sizeof(VECTOR3));
+//            gcgSETVECTOR3(points[i], 0.,0.,0.);
+//        }
+//    }
+//    ~RandomQueue(){
+//        for(int i = 0; i < count; i++){
+//            delete(points[i]);
+//        }
+//        delete(points);
+//    }
+//    void push(VECTOR3 point){
+//        gcgCOPYVECTOR3(points[count], point);
+//        count++;
+//    }
+//    void pop(VECTOR3 point){
+//        int countMinus1 = (count - 1);
+//        int index = rand() % (countMinus1);
+//        gcgCOPYVECTOR3(point, points[index]);
+//        if(index != (countMinus1)){
+//            gcgCOPYVECTOR3(points[index], points[countMinus1]);
+//        }
+//        gcgSETVECTOR3(points[countMinus1], 0.,0.,0.);
+//        count--;
+//    }
+//};
+
+
+//void generate_poisson(width, height, depth, min_dist, new_points_count)
+//{
+//  //Create the grid
+//  cellSize = min_dist/sqrt(2);
+//
+//  grid = Grid3D(Point(
+//    (ceil(width/cell_size),         //grid width
+//     ceil(height/cell_size),
+//     ceil(depth/cell_size))));      //grid height
+//
+//  //RandomQueue works like a queue, except that it
+//  //pops a random element from the queue instead of
+//  //the element at the head of the queue
+//  RandomQueue * processList = new RandomQueue(new_points_count);
+//  
+//  samplePoints = List();
+//
+//  //generate the first point randomly
+//  //and updates 
+//
+//  firstPoint = Point(rand(width), rand(height));
+//
+//  //update containers
+//  processList.push(firstPoint);
+//  samplePoints.push(firstPoint);
+//  grid[imageToGrid(firstPoint, cellSize)] = firstPoint;
+//
+//  //generate other points from points in queue.
+//  while (not processList.empty())
+//  {
+//    point = processList.pop();
+//    for (i = 0; i < new_points_count; i++)
+//    {
+//      newPoint = generateRandomPointAround(point, min_dist);
+//      //check that the point is in the image region
+//      //and no points exists in the point's neighbourhood
+//      if (inRectangle(newPoint) and
+//        not inNeighbourhood(grid, newPoint, min_dist,
+//          cellSize))
+//      {
+//        //update containers
+//        processList.push(newPoint);
+//        samplePoints.push(newPoint);
+//        grid[imageToGrid(newPoint, cellSize)] =  newPoint;
+//      }
+//    }
+//  }
+//  return samplePoints;
+//}
+
+
+float getDistance(VECTOR3 p1, VECTOR3 p2){
+    VECTOR3 differenceVector;
+    gcgSETVECTOR3(differenceVector, (p1[0]-p2[0]), (p1[1]-p2[1]), (p1[2]-p2[2]));
+    return (sqrtf((differenceVector[0]*differenceVector[0])+(differenceVector[1]*differenceVector[1])+(differenceVector[2]*differenceVector[2])));
+}
+
+gcgSph::gcgSph(float mass, int nParticles, float density, unsigned int fluidWidth, unsigned int fluidHeight, unsigned int fluidDepth, unsigned int width, unsigned int height, unsigned int depth) {
+    
+    srand ( time(NULL) );
+    
+    int minX = 10, maxX = 20;
+    srand ( time(NULL) );
+
+  /* generate secret number: */
+    this->width = width;
+    this->height = height;
+    this->depth = depth;
+    this->widthFluid = fluidWidth;
+    this->heightFluid = fluidHeight;
+    this->depthFluid = fluidDepth;
+    
+    
+    this->nParticles = nParticles;
+    this->initialDensity = density;
+    VECTOR3 velocity, pos;
+    gcgSETVECTOR3(velocity, 0.,0.,0.);
+    VECTOR3 c1, c2;
+    gcgSETVECTOR3(c1,0,0,0);
+    gcgSETVECTOR3(c2,width,height,depth);
+    octree = new Octree(c1, c2, 0, NULL);
+    unsigned int volume = fluidDepth * fluidHeight * fluidWidth;
+    
+//    this->nParticles = (int)((60 * volume)/(4*M_PI*supportRadius3));
+    
+    printf("Particulas: %d\n", this->nParticles);
+    
+//    this->width = width;
+//    this->height = height;
+//    this->depth = depth;
+    
+    mass = (initialDensity * (float)volume) / ((float)nParticles);
+    this->particlesMass = mass;
+    
+    float cres = 0.5;
+    float x = 5;
+    int count = 0;
+    particles = (gcgParticleSPH**)malloc(nParticles*sizeof(gcgParticleSPH*));
+    
+    float pRadius = pow(0.75*mass/(998.29 * M_PI), 1.0/3.0);
+    printf("Raio: %f\n", pRadius);
+    
+    for(int i = 4; i > 0; i--){
+        if(count  >= nParticles) break; 
+        for(int j = 6; j > 0; j--){
+            if(count  >= nParticles) break; 
+            for(int k = 8; k > 0; k--){
+                if(count  >= nParticles) break; 
+
+                gcgSETVECTOR3(pos, i * 0.5, j * 0.5, k * 0.5);  
+        //        gcgSETVECTOR3(pos, 0,20.,0.);  
+                particles[count] = new gcgParticleSPH(mass, pRadius, pos, velocity);
+                octree->add(particles[count]);
+                gcgSETVECTOR3(particles[count]->color, 0.,0.,0.8);
+        //        printf("Cor: $f $f $f")
+//                x += cres;
+
+                #if (INTEGRATOR == LEAP_FROG)
+                    gcgSCALEVECTOR3(particles[count]->nextVelocity, particles[count]->acceleration, (-0.5*TIME_STEP));
+                    gcgADDVECTOR3(particles[count]->nextVelocity, particles[count]->nextVelocity, particles[count]->velocity);
+                #endif
+                
+                    count++;
+                
+            }
+        }
+    }
+    printf("Criadas: %d\n", count);
+    
+//    for(int i = 0; i < nParticles; i++){
+//        float r = ((float)(rand() % 256))/255.0, g = ((float)(rand() % 256))/255.0, b = ((float)(rand() % 256))/255.0;
+//        
+//        gcgSETVECTOR3(pos, x,10.,5.);  
+////        gcgSETVECTOR3(pos, 0,20.,0.);  
+//        particles[i] = new gcgParticleSPH(mass, 0.1, pos, velocity);
+//        octree->add(particles[i]);
+//        gcgSETVECTOR3(particles[i]->color, r, g, b);
+////        printf("Cor: $f $f $f")
+//        x += cres;
+//        
+//        #if (INTEGRATOR == LEAP_FROG)
+//            gcgSCALEVECTOR3(particles[i]->nextVelocity, particles[i]->acceleration, (-0.5*TIME_STEP));
+//            gcgADDVECTOR3(particles[i]->nextVelocity, particles[i]->nextVelocity, particles[i]->velocity);
+//        #endif
+//    }
+    
+   
+    
+         
+}
+void gcgSph::checkBoundaryCondition(gcgParticleSPH * p, VECTOR3 at, VECTOR3 vt){
+    ///Colocar restricao
+    VECTOR3 predpos;
+
+    VECTOR3 aux;
+    
+
+    
+  #if (INTEGRATOR == VERLET)
+    gcgADDVECTOR3(aux, vt, at);
+  #else
+    gcgSCALEVECTOR3(aux, p->nextVelocity, TIME_STEP);
+  #endif
+
+  gcgADDVECTOR3(predpos, p->position, aux);
+
+
+  ///if the particle is outside of the bounding box, we invert its velocity
+    if (predpos[0] < 0){
+       #if (INTEGRATOR == VERLET)
+        p->velocity[0] = ENERGY*fabs(p->velocity[0]);
+       #else
+        p->nextVelocity[0] = ENERGY*fabs(p->nextVelocity[0]);
+       #endif
+     }
+
+     if (predpos[0] > width){
+       #if (INTEGRATOR == VERLET)
+        p->velocity[0] = -ENERGY*fabs(p->velocity[0]);
+       #else
+        p->nextVelocity[0] = -ENERGY*fabs(p->nextVelocity[0]);
+       #endif
+     }
+
+     if ((predpos[1] < 0)){// || (predpos[1] > height)){
+        ///we should check this better in the future, because perhaps this can lead to strange results if the particle goes too far from the box
+       #if (INTEGRATOR == VERLET)
+        p->velocity[1] = ENERGY*fabs(p->velocity[1]);
+       #else
+        p->nextVelocity[1] = ENERGY*fabs(p->nextVelocity[1]);
+       #endif
+     }
+     if ((predpos[1] > height)){// || (predpos[1] > height)){
+        ///we should check this better in the future, because perhaps this can lead to strange results if the particle goes too far from the box
+       #if (INTEGRATOR == VERLET)
+        p->velocity[1] = -ENERGY*fabs(p->velocity[1]);
+       #else
+        p->nextVelocity[1] = -ENERGY*fabs(p->nextVelocity[1]);
+       #endif
+     }
+
+
+     if (predpos[2] < 0){
+       #if (INTEGRATOR == VERLET)
+        p->velocity[2] = ENERGY*fabs(p->velocity[2]);
+       #else
+        p->nextVelocity[2] = ENERGY*fabs(p->nextVelocity[2]);
+       #endif
+     }
+
+     if (predpos[2] > depth){
+       #if (INTEGRATOR == VERLET)
+        p->velocity[2] = -ENERGY*fabs(p->velocity[2]);
+       #else
+        p->nextVelocity[2] = -ENERGY*fabs(p->nextVelocity[2]);
+       #endif
+     }
+  ///p->pos = p->pos + timeStep * p->vel; it's the new vel, as in the book. is it right?
+
+
+
+  #if (INTEGRATOR == VERLET)
+    gcgADDVECTOR3(aux, vt, at);
+  #else
+    gcgSCALEVECTOR3(aux, p->nextVelocity, TIME_STEP);
+  #endif
+  
+    
+  gcgCOPYVECTOR3(predpos, p->position);
+  
+  gcgADDVECTOR3(p->position, p->position, aux);
+  
+  octree->particleMoved(p, predpos);
+    
+}
+
+void gcgSph::iterate() {
+    printf("Iterate!\n");
+    #if (INTEGRATOR == VERLET)
+        for(int i = 0; i < nParticles; i++) {
+            gcgParticleSPH* p = particles[i];
+            VECTOR3 vt, at;
+            gcgSCALEVECTOR3(vt, p->velocity, TIME_STEP);
+            gcgSCALEVECTOR3(at, p->acceleration, TIME_STEP2*0.5);
+            checkBoundaryCondition(p, at, vt);
+            ///Fazendo no boundary
+//            gcgADDVECTOR3(p->position, p->position, vt);
+//            gcgADDVECTOR3(p->position, p->position, at);
+            gcgCOPYVECTOR3(p->lastAcceleration, p->acceleration);
+            gcgSETVECTOR3(p->acceleration, 0.0, 0.0, 0.0);
+            gcgCOPYVECTOR3(p->lastVelocity, p->velocity);
+        }
+    #endif
+
+    
+    ///Finding neighbours
+    for(int i = 0; i < nParticles; i++){
+        gcgParticleSPH * p = particles[i];
+        p->neighbourCheck = true;
+        for(int j = 0; j < nParticles; j++){
+            gcgParticleSPH * p2 = particles[j];
+            if(!p2->neighbourCheck){
+                if(getDistance(p->position, p2->position) <= p->influenceRadius){
+                    p->neighbours.push_back(p2);
+                    p2->neighbours.push_back(p);
+//                    printf("Eee krai!");
+//                    exit(0);
+                }
+            }
+        }
+    }
+    
+      
+    
+    /////////////SPH/////////////////////////////
+    ///Termo de pressao e massa especifica
+    for(int i = 0; i < nParticles; i++){
+        gcgParticleSPH * p = particles[i];
+        if(p->neighbours.size() <= 0) {
+            p->massDensity = 0;
+        }
+        else{
+            for(std::vector<gcgParticleSPH*>::iterator it = p->neighbours.begin(); it != p->neighbours.end(); ++it) {
+    //        for(int j = 0; j < nParticles; j++){
+                p->calculateMassDensity(*it);
+    //                printf("I = %d | J = %d | Massa especifica: %f\n", i, j, particles[i]->massDensity);
+            }
+            p->calculatePressureTerm(); 
+    //        printf("I = %d | Termo de pressao: %f\n", i, particles[i]->pressureTerm);
+    //        printf("Termo de pressao: %f %f %f\n", particles[i]->pressureTerm[0], particles[i]->pressureTerm[1], particles[i]->pressureTerm[2]);
+        }
+    }
+    
+    ///Forcas
+    for(int i = 0; i < nParticles; i++){
+        gcgParticleSPH * p = particles[i];
+        for(std::vector<gcgParticleSPH*>::iterator it = p->neighbours.begin(); it != p->neighbours.end(); ++it) {
+                p->calculatePressure(*it);
+                p->calculateViscosity(*it);
+        }
+        p->calculateGravity();
+    }
+    
+    /////////////////////////SPH////////////////////////
+    ///Nova aceleracao
+    #if (INTEGRATOR == VERLET)
+        for(int i = 0; i < nParticles; i++) {
+            gcgParticleSPH* p = particles[i];
+            /////////Navier Stokes
+            gcgADDVECTOR3(p->acceleration, p->pressure, p->viscosity);
+            gcgADDVECTOR3(p->acceleration, p->acceleration, p->gravity);
+            gcgSCALEVECTOR3(p->acceleration, p->acceleration, 1./p->massDensity);
+            printf("Aceleracao: %f %f %f\n", p->acceleration[0], p->acceleration[1], p->acceleration[2]);   
+    //        gcgCOPYVECTOR3(p->acceleration, p->gravity);
+            ////////////////////////////
+            VECTOR3 at;
+            gcgADDVECTOR3(at, p->lastAcceleration, p->acceleration);
+            gcgSCALEVECTOR3(at, at, 0.5*TIME_STEP);
+            gcgADDVECTOR3(p->velocity, p->lastVelocity, at);
+
+            ///Recalcula o raio
+            p->radius = radiusScale * (pow((3.*p->mass/(float)(4.*M_PI*p->massDensity)),(1./3.)));
+        }
+    
+    #elif (INTEGRATOR == LEAP_FROG)
+        for(int i = 0; i < nParticles; i++) {
+            gcgParticleSPH* p = particles[i];
+            
+            if(p->neighbours.size() > 0){
+            gcgADDVECTOR3(p->acceleration, p->pressure, p->viscosity);
+            }
+            
+            gcgADDVECTOR3(p->acceleration, p->acceleration, p->gravity);
+
+            if(p->neighbours.size() > 0){
+            gcgSCALEVECTOR3(p->acceleration, p->acceleration, 1./p->massDensity);
+            }
+            
+            gcgCOPYVECTOR3(p->lastVelocity, p->nextVelocity);
+                       
+            gcgSCALEVECTOR3(p->nextVelocity, p->acceleration, TIME_STEP);
+            gcgADDVECTOR3(p->nextVelocity, p->nextVelocity, p->lastVelocity);
+            
+            checkBoundaryCondition(p, NULL, NULL);
+            
+//            VECTOR3 pos;
+//            gcgCOPYVECTOR3(pos, p->position);
+//            
+//            gcgSCALEVECTOR3(p->position, p->nextVelocity, TIME_STEP);
+//            gcgADDVECTOR3(p->position, p->position, pos);
+            
+            gcgCOPYVECTOR3(p->lastAcceleration, p->acceleration);
+            printf("Aceleracao: %f %f %f\n", p->acceleration[0], p->acceleration[1], p->acceleration[2]);
+            gcgSETVECTOR3(p->acceleration, 0.0, 0.0, 0.0);
+            
+//            p->radius = radiusScale * (pow((0.75*p->mass/(float)(3*M_PI*p->massDensity)),(1./3.))); /// Fixo
+            p->resetIteration();
+        }
+    #endif
+    
+}
+
+void gcgSph::drawParticles() {
+
+    for(int i = 0; i<nParticles; i++){
+        glPushMatrix();
+        gcgParticleSPH* p = particles[i];
+        glTranslatef(p->position[0],p->position[1], p->position[2]);
+        glColor3f(p->color[0], p->color[1], p->color[2]);
+        glutSolidSphere(p->radius, 10, 10);
+        glPopMatrix();
+    }
+}
+
+gcgSph::~gcgSph() {
+}
+

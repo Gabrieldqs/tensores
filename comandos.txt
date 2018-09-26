@@ -1,0 +1,3 @@
+c: define a visibilidade ou nao dos tensores calculados (original e escala 1)
+i: define a visibilidade ou nao dos tensores interpolados
+o: faz o chaveamento para exibir ou o campo original ou o campo de escala 1

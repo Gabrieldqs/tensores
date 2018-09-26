@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configurationDescriptor version="84">
+  <logicalFolder name="root" displayName="root" projectFiles="true" kind="ROOT">
+    <logicalFolder name="HeaderFiles"
+                   displayName="Arquivos de cabeçalho"
+                   projectFiles="true">
+      <itemPath>gcg.h</itemPath>
+      <itemPath>gcgTensor.h</itemPath>
+      <itemPath>geometryInterface.h</itemPath>
+      <itemPath>newGrid.h</itemPath>
+      <itemPath>octree.h</itemPath>
+      <itemPath>optimizedGrid.h</itemPath>
+      <itemPath>particle.h</itemPath>
+      <itemPath>quicksort.h</itemPath>
+      <itemPath>sph.h</itemPath>
+      <itemPath>squadric.h</itemPath>
+      <itemPath>superquadric.h</itemPath>
+      <itemPath>tensorHeap.h</itemPath>
+      <itemPath>tensorgenerate.h</itemPath>
+      <itemPath>tensorglyph.h</itemPath>
+      <itemPath>tensorgrid.h</itemPath>
+    </logicalFolder>
+    <logicalFolder name="SourceFiles"
+                   displayName="Arquivos de código-fonte"
+                   projectFiles="true">
+      <itemPath>gcgTensor.cpp</itemPath>
+      <itemPath>main.cpp</itemPath>
+      <itemPath>newGrid.cpp</itemPath>
+      <itemPath>octree.cpp</itemPath>
+      <itemPath>optimizedGrid.cpp</itemPath>
+      <itemPath>particle.cpp</itemPath>
+      <itemPath>quicksort.cpp</itemPath>
+      <itemPath>sph.cpp</itemPath>
+      <itemPath>squadric.cpp</itemPath>
+      <itemPath>superquadric.cpp</itemPath>
+      <itemPath>tensorHeap.cpp</itemPath>
+      <itemPath>tensorgenerate.cpp</itemPath>
+      <itemPath>tensorglyph.cpp</itemPath>
+      <itemPath>tensorgrid.cpp</itemPath>
+      <itemPath>tensorvisu.cpp</itemPath>
+    </logicalFolder>
+    <logicalFolder name="ResourceFiles"
+                   displayName="Arquivos de recurso"
+                   projectFiles="true">
+    </logicalFolder>
+    <logicalFolder name="TestFiles"
+                   displayName="Arquivos de testes"
+                   projectFiles="false"
+                   kind="TEST_LOGICAL_FOLDER">
+    </logicalFolder>
+    <logicalFolder name="ExternalFiles"
+                   displayName="Arquivos importantes"
+                   projectFiles="false"
+                   kind="IMPORTANT_FILES_FOLDER">
+      <itemPath>TensorVisuAdvec-Sphere-Makefile.mk</itemPath>
+    </logicalFolder>
+    <itemPath>olds_bkp.txt</itemPath>
+  </logicalFolder>
+  <projectmakefile>TensorVisuAdvec-Sphere-Makefile.mk</projectmakefile>
+  <confs>
+    <conf name="Debug" type="1">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>GNU|GNU</compilerSet>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <incDir>
+            <pElem>/usr/include/GL</pElem>
+          </incDir>
+        </cTool>
+        <ccTool>
+          <incDir>
+            <pElem>/usr/include/GL</pElem>
+          </incDir>
+        </ccTool>
+        <linkerTool>
+          <linkerLibItems>
+            <linkerOptionItem>-lglui -lglut -lGLU -lGL -ljpeg</linkerOptionItem>
+            <linkerLibLibItem>gcg64</linkerLibLibItem>
+            <linkerLibLibItem>jpeg</linkerLibLibItem>
+          </linkerLibItems>
+        </linkerTool>
+      </compileType>
+    </conf>
+    <conf name="Release" type="1">
+      <toolsSet>
+        <remote-sources-mode>LOCAL_SOURCES</remote-sources-mode>
+        <compilerSet>GNU|GNU</compilerSet>
+      </toolsSet>
+      <compileType>
+        <cTool>
+          <developmentMode>5</developmentMode>
+        </cTool>
+        <ccTool>
+          <developmentMode>5</developmentMode>
+        </ccTool>
+        <fortranCompilerTool>
+          <developmentMode>5</developmentMode>
+        </fortranCompilerTool>
+        <asmTool>
+          <developmentMode>5</developmentMode>
+        </asmTool>
+      </compileType>
+    </conf>
+  </confs>
+</configurationDescriptor>

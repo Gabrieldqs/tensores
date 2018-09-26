@@ -1,0 +1,13 @@
+NRRD0001
+content: resample(permute(x(permute(gk2-rcc-mask,1,2,3,0),slice(gk2-rcc-mask,0,0)),3,0,1,2))
+type: float
+dimension: 4
+sizes: 7 74 95 80
+spacings:  NaN 2.0137 2.01064 2.01266
+axis mins:  NaN 0 0 0
+axis maxs:  NaN 147 189 159
+labels: "conf,Dxx,Dxy,Dxz,Dyy,Dyz,Dzz" "x" "y" "z"
+units: "" "mm" "mm" "mm"
+data file: ./smaller.raw
+endian: big
+encoding: raw
